@@ -26,7 +26,7 @@ class Adventurer:
         self.hp = 15
         self.mp = 15
         self.backpack = {"Weapons": [], "Armor": [], "Consumables": [], "Other": []}
-        self.equipped = {"Weapon": Weapon(), "Armor": Armor()}
+        self.equipped = {"Weapon": Item(), "Armor": Item()}
         self.stats = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
         self.ac = 0
         self.modifiers = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
@@ -277,53 +277,81 @@ class Enemy:
             result = dice_roll.enemy_attack_roll(hit_roll, self, player)
             return result
 
+    def set_starting_equip(self, weapon, armor):
+        self.equipped["Weapon"] = weapon
+        self.equipped["Armor"] = armor
+
+    def set_stats(self):
+        info = get_monster_info(self)
+        self.ch_rating = info['challenge_rating']
+        self.ac = info['armor_class'] + self.equipped["Armor"].bonus
+        self.hp = info['hit_points']
+        self.stats["str"] = info['strength']
+        self.stats["dex"] = info['dexterity']
+        self.stats["con"] = info['constitution']
+        self.stats["int"] = info['intelligence']
+        self.stats["wis"] = info['wisdom']
+        self.stats["cha"] = info['charisma']
+        if "spellcasting" in info:
+            self.mp = self.int * self.ch_rating
+        else:
+            self.mp = 0
+
     def __repr__(self):
         return f"--- {self.name} ---\nChallenge Rating: {self.ch_rating}\nArmor Class: {self.ac}\nHP: {self.hp}  " \
                f"MP: {self.mp}"
-               
+
+
 class Item:
 
-    def __init__(self, name="Empty", item_type="other", rarity="common", description=""):
+    def __init__(self, name="Empty", effect="None"):
         self.name = name
-        self.item_type = ""
         self.rarity = ""
+        self.bonus = 0
+        self.dmg_dice = ""
+        self.th_dmg_dice = ""
+        self.dmg_dice_num = ""
+        self.th_dmg_dice_num = ""
+        self.effect = effect
+        self.effect_dice = ""
+        self.weapon_type = ""
+        self.weapon_property = ""
+        self.item_type = ""
         self.description = ""
 
+    def get_desc(self):
+        info_dict = get_item_info(self)
+        desc = info_dict["desc"]
+        self.item_type = info_dict["equipment_category"]["index"]
+        properties = info_dict["properties"]
+        self.weapon_type = info_dict["weapon_category"]
+        self.weapon_property = properties[0]["index"]
+        if self.item_type == "weapon":
+            if properties[1]["index"] == "versatile":
+                dice = info_dict["damage"]["damage_dice"]
+                dice_type = dice.split(dice[0])[1]
+                dice_number = dice.split("d")[0]
+                self.dmg_dice = dice_type
+                self.dmg_dice_num = dice_number
+                th_dice = info_dict["two_handed_damage"]["damage_dice"]
+                th_dice_type = th_dice.split(th_dice[0])[1]
+                th_dice_number = th_dice.split("d")[0]
+                self.th_dmg_dice = th_dice_type
+                self.th_dmg_dice_num = th_dice_number
+            else:
+                dice = info_dict["damage"]["damage_dice"]
+                dice_type = dice.split(dice[0])[1]
+                dice_number = dice.split("d")[0]
+                self.dmg_dice = dice_type
+                self.dmg_dice_num = dice_number
+
+        self.description = desc
 
     def interaction(self, target):
         pass
 
     def __repr__(self):
-        return f"--- {self.name} ---\nType: {self.item_type} Rarity: {self.rarity}\nDescription: {self.description}"
-    
-    
-class Weapon(Item):
-    
-    def __init__(self, name="Empty", item_type="weapon", rarity="common", description="", weapon_type="", effect="", effect_dice="",
-                 damage_dice=(), bonus=0):
-        super().__init__(name, item_type, rarity, description)
-        self.weapon_type = weapon_type
-        self.weapon_type = ""
-        self.effect = effect
-        self.effect_dice = effect_dice
-        self.damage_dice = damage_dice
-        self.bonus = bonus
-
-class Armor(Item):
-    
-    def __init__(self, name="Empty", item_type="armor", rarity="common", description="", ac=0, bonus=0):
-        super().__init__(name, item_type, rarity, description)
-        self.ac = ac
-        self.bonus = bonus
-        
-class Consumable(Item):
-    
-    def __init__(self, name="Empty", item_type="consumable", rarity="common", description="", effect="",
-                 effect_dice=()):
-        super().__init__(name, item_type, rarity, description)
-        self.effect = effect
-        self.effect_dice = effect_dice
-        
+        return f"--- {self.name} ---\nType: {self.item_type}  description: {self.description}"
 
 
 def set_modifiers(player):
@@ -341,6 +369,38 @@ def set_modifiers(player):
             player.modifiers[stat[0]] = 3
         elif 18 <= stat[1]:
             player.modifiers[stat[0]] = 4
+
+
+def get_monster_info(monster):
+    name = monster.name.lower()
+    name = name.replace(' ', '-')
+    url = f"https://www.dnd5eapi.co/api/monsters/{name}"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = soup.text.strip("\"")
+    soup = soup.strip("'")
+    info_dict = literal_eval(soup)
+    return info_dict
+
+
+def get_item_info(item):
+    name = item.name
+    name = name.replace(' ', '-')
+    name = name.lower()
+    if item.item_type == "consumable":
+        url = f"https://www.dnd5eapi.co/api/magic-items/{name}"
+    elif item.item_type == "weapon" or item.item_type == "armor":
+        url = f"https://www.dnd5eapi.co/api/equipment/{name}"
+    elif item.item_type == "magic_weapon" or item.item_type == "magic_armor":
+        url = f"https://www.dnd5eapi.co/api/magic-items/{name}"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = soup.text.strip("\"")
+    soup = soup.strip("'")
+    soup = soup.replace("true", "True")
+    soup = soup.replace("false", "False")
+    item_dict = literal_eval(soup)
+    return item_dict
 
 
 def create_character(ad, classes, races):
@@ -440,19 +500,71 @@ def reveal_room(room, ad):
 
 
 def get_enemies(enemies):
-    pass
+    c.execute(f"""SELECT * fROM monsters
+    """)
+    records = c.fetchall()
+    for row in records:
+        enemy = Enemy(row[0])
+        enemy.ch_rating = row[1]
+        enemy.ac = row[2]
+        enemy.hp = row[3]
+        enemy.stats = {"str": row[4], "dex": row[5], "con": row[6], "int": row[7], "wis": row[8], "cha": row[9]}
+        enemies.append(enemy)
 
 
 def get_equipment(equipment):
-    pass
+    c.execute("""SELECT * fROM items WHERE (item_type='weapon' or item_type = 'armor') and rarity IS NULL
+    """)
+    records = c.fetchall()
+    for row in records:
+        item = Item(row[0], row[2])
+        item.dmg_dice = row[4]
+        item.th_dmg_dice = row[5]
+        item.dmg_dice_num = row[6]
+        item.th_dmg_dice_num = row[7]
+        item.weapon_type = row[9]
+        item.item_type = row[10]
+        item.description = row[11]
+        item.weapon_property = row[12]
+        equipment.append(item)
 
 
-def get_loot(loot):
-    pass
+def get_loot_table(loot):
+    c.execute("""SELECT * fROM items WHERE rarity = 'Common' or rarity = 'Uncommon'
+        """)
+    records = c.fetchall()
+    for row in records:
+        item = Item(row[0], row[2])
+        item.rarity = row[1]
+        item.bonus = row[3]
+        item.dmg_dice = row[4]
+        item.th_dmg_dice = row[5]
+        item.dmg_dice_num = row[6]
+        item.th_dmg_dice_num = row[7]
+        item.weapon_type = row[9]
+        item.item_type = row[10]
+        item.description = row[11]
+        item.weapon_property = row[12]
+        loot.append(item)
 
 
-def get_rare_loot(rare_loot):
-    pass
+def get_rare_loot_table(rare_loot):
+    c.execute("""SELECT * fROM items WHERE rarity = 'Rare' or rarity = 'Very Rare'
+        """)
+    records = c.fetchall()
+    for row in records:
+        item = Item(row[0], row[2])
+        item.rarity = row[1]
+        item.bonus = row[3]
+        item.dmg_dice = row[4]
+        item.th_dmg_dice = row[5]
+        item.dmg_dice_num = row[6]
+        item.th_dmg_dice_num = row[7]
+        item.weapon_type = row[9]
+        item.item_type = row[10]
+        item.description = row[11]
+        item.weapon_property = row[12]
+        rare_loot.append(item)
 
 
 def fight(num_enemies, enemy, player):
@@ -494,27 +606,27 @@ def fight(num_enemies, enemy, player):
 def main():
     choice = 0
     curr_char_alive = True
-    equipment = {
-        
-    }
-    loot = {
-        
-    }
-    rare_loot = {
-        
-    }
-    enemies = {
-        
-    }
-    bosses = {
-        
-    }
-    puzzles = {
-        
-    }
-    puzzle_keys = {
-        
-    }
+    equipment = []
+    get_equipment(equipment)
+    print(equipment)
+    loot = []
+    get_loot_table(loot)
+    rare_loot_table = []
+    get_rare_loot_table(rare_loot_table)
+    enemies = [Enemy("Goblin"), Enemy("Bandit"), Enemy("Cultist"), Enemy("Satyr")]
+    bosses = [Enemy("BugBear"), Enemy("Dire Wolf"), Enemy("Dryad"), Enemy("Cult Fanatic")]
+    puzzles = []
+    puzzle_keys = [Item("Large Gem", "other", ),
+                   Item("Large Gem", "other")]
+    for enemy in enemies:
+        enemy.set_stats()
+        set_modifiers(enemy)
+        enemy.set_starting_equip(equipment[5], equipment[17])
+    for boss in bosses:
+        boss.set_stats()
+        set_modifiers(boss)
+        boss.set_starting_equip(equipment[5], equipment[17])
+
     races = ["elf", "dwarf", "teifling", "halfling", "goliath"]
     classes = ["barbarian", "rogue", "ranger", "paladin", "cleric", "wizard", "warlock", "fighter"]
     ad = Adventurer()
@@ -568,7 +680,7 @@ def main():
                                         else:
                                             print("That item is not in your backpack!")
                 case 3:
-                    new_dungeon = dungeon.create_dungeon(ad.level, loot, rare_loot, puzzle_keys, enemies, bosses,
+                    new_dungeon = dungeon.create_dungeon(ad.level, loot, rare_loot_table, puzzle_keys, enemies, bosses,
                                                          random.randint(4, 10), puzzles)
                     while not new_dungeon.is_empty():
                         game_over = reveal_room(new_dungeon.head, ad)
