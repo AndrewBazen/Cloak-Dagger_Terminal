@@ -66,21 +66,22 @@ class LinkedList:
         return self.head is None
 
 
-def create_dungeon(player_level, loot, rare_loot, puzzle_keys, enemies, bosses, num_rooms, puzzles):
+def create_dungeon(player_level, loot_table, rare_loot_table, puzzle_keys, enemies, boss_mons, num_rooms, puzzles):
     dungeon = LinkedList()
-    dungeon.head = RoomNode("boss room", 1, bosses[random.randint(0, 3)], rare_loot[0])
+    dungeon.head = RoomNode("boss room", 1, boss_mons[random.randint(0, 3)], rare_loot_table[0])
     counter = num_rooms
     while counter > 0:
-        room_roll = dice_roll.roll(1, "d4")
+        # room_roll = dice_roll.roll(1, "d4")
+        room_roll = [1]
         match room_roll[0]:
             case 1:
                 enemy_type = enemies[random.randint(0, 3)]
                 while enemy_type.ch_rating - player_level > 2:
                     enemy_type = enemies[random.randint(0, 3)]
-                dungeon.insert("Fight room", random.randint(1, 3), enemy_type, enemy_type.loot, None)
+                dungeon.insert("Fight room", random.randint(1, 3), enemy_type, loot_table[random.randint(0, 1)], puzzles)
                 counter -= 1
             case 2:
-                dungeon.insert("Loot room", None, None, loot[random.randint(0, 1)], None)
+                dungeon.insert("Loot room", None, None, loot_table[random.randint(0, 1)], None)
                 counter -= 1
             case 3:
                 dungeon.insert("Puzzle room", None, None, puzzle_keys, puzzles)
