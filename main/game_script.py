@@ -301,17 +301,10 @@ class Enemy:
         return f"--- {self.name} ---\nChallenge Rating: {self.ch_rating}\nArmor Class: {self.ac}\nHP: {self.hp}  " \
                f"MP: {self.mp}"
 
-
-class Item:
-
     def __init__(self, name="Empty", effect="None"):
         self.name = name
         self.rarity = ""
         self.bonus = 0
-        self.dmg_dice = ""
-        self.th_dmg_dice = ""
-        self.dmg_dice_num = ""
-        self.th_dmg_dice_num = ""
         self.effect = effect
         self.effect_dice = ""
         self.weapon_type = ""
@@ -319,33 +312,6 @@ class Item:
         self.item_type = ""
         self.description = ""
 
-    def get_desc(self):
-        info_dict = get_item_info(self)
-        desc = info_dict["desc"]
-        self.item_type = info_dict["equipment_category"]["index"]
-        properties = info_dict["properties"]
-        self.weapon_type = info_dict["weapon_category"]
-        self.weapon_property = properties[0]["index"]
-        if self.item_type == "weapon":
-            if properties[1]["index"] == "versatile":
-                dice = info_dict["damage"]["damage_dice"]
-                dice_type = dice.split(dice[0])[1]
-                dice_number = dice.split("d")[0]
-                self.dmg_dice = dice_type
-                self.dmg_dice_num = dice_number
-                th_dice = info_dict["two_handed_damage"]["damage_dice"]
-                th_dice_type = th_dice.split(th_dice[0])[1]
-                th_dice_number = th_dice.split("d")[0]
-                self.th_dmg_dice = th_dice_type
-                self.th_dmg_dice_num = th_dice_number
-            else:
-                dice = info_dict["damage"]["damage_dice"]
-                dice_type = dice.split(dice[0])[1]
-                dice_number = dice.split("d")[0]
-                self.dmg_dice = dice_type
-                self.dmg_dice_num = dice_number
-
-        self.description = desc
 
     def interaction(self, target):
         pass
@@ -353,6 +319,7 @@ class Item:
     def __repr__(self):
         return f"--- {self.name} ---\nType: {self.item_type}  description: {self.description}"
 
+class
 
 def set_modifiers(player):
     stats = player.stats.items()
@@ -371,36 +338,13 @@ def set_modifiers(player):
             player.modifiers[stat[0]] = 4
 
 
-def get_monster_info(monster):
-    name = monster.name.lower()
-    name = name.replace(' ', '-')
-    url = f"https://www.dnd5eapi.co/api/monsters/{name}"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    soup = soup.text.strip("\"")
-    soup = soup.strip("'")
-    info_dict = literal_eval(soup)
-    return info_dict
+def get_enemy_info(monster):
+    pass
 
 
 def get_item_info(item):
     name = item.name
-    name = name.replace(' ', '-')
-    name = name.lower()
-    if item.item_type == "consumable":
-        url = f"https://www.dnd5eapi.co/api/magic-items/{name}"
-    elif item.item_type == "weapon" or item.item_type == "armor":
-        url = f"https://www.dnd5eapi.co/api/equipment/{name}"
-    elif item.item_type == "magic_weapon" or item.item_type == "magic_armor":
-        url = f"https://www.dnd5eapi.co/api/magic-items/{name}"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    soup = soup.text.strip("\"")
-    soup = soup.strip("'")
-    soup = soup.replace("true", "True")
-    soup = soup.replace("false", "False")
-    item_dict = literal_eval(soup)
-    return item_dict
+    pass
 
 
 def create_character(ad, classes, races):
@@ -500,71 +444,19 @@ def reveal_room(room, ad):
 
 
 def get_enemies(enemies):
-    c.execute(f"""SELECT * fROM monsters
-    """)
-    records = c.fetchall()
-    for row in records:
-        enemy = Enemy(row[0])
-        enemy.ch_rating = row[1]
-        enemy.ac = row[2]
-        enemy.hp = row[3]
-        enemy.stats = {"str": row[4], "dex": row[5], "con": row[6], "int": row[7], "wis": row[8], "cha": row[9]}
-        enemies.append(enemy)
+    pass
 
 
 def get_equipment(equipment):
-    c.execute("""SELECT * fROM items WHERE (item_type='weapon' or item_type = 'armor') and rarity IS NULL
-    """)
-    records = c.fetchall()
-    for row in records:
-        item = Item(row[0], row[2])
-        item.dmg_dice = row[4]
-        item.th_dmg_dice = row[5]
-        item.dmg_dice_num = row[6]
-        item.th_dmg_dice_num = row[7]
-        item.weapon_type = row[9]
-        item.item_type = row[10]
-        item.description = row[11]
-        item.weapon_property = row[12]
-        equipment.append(item)
+    pass
 
 
-def get_loot_table(loot):
-    c.execute("""SELECT * fROM items WHERE rarity = 'Common' or rarity = 'Uncommon'
-        """)
-    records = c.fetchall()
-    for row in records:
-        item = Item(row[0], row[2])
-        item.rarity = row[1]
-        item.bonus = row[3]
-        item.dmg_dice = row[4]
-        item.th_dmg_dice = row[5]
-        item.dmg_dice_num = row[6]
-        item.th_dmg_dice_num = row[7]
-        item.weapon_type = row[9]
-        item.item_type = row[10]
-        item.description = row[11]
-        item.weapon_property = row[12]
-        loot.append(item)
+def get_loot(loot):
+    pass
 
 
-def get_rare_loot_table(rare_loot):
-    c.execute("""SELECT * fROM items WHERE rarity = 'Rare' or rarity = 'Very Rare'
-        """)
-    records = c.fetchall()
-    for row in records:
-        item = Item(row[0], row[2])
-        item.rarity = row[1]
-        item.bonus = row[3]
-        item.dmg_dice = row[4]
-        item.th_dmg_dice = row[5]
-        item.dmg_dice_num = row[6]
-        item.th_dmg_dice_num = row[7]
-        item.weapon_type = row[9]
-        item.item_type = row[10]
-        item.description = row[11]
-        item.weapon_property = row[12]
-        rare_loot.append(item)
+def get_rare_loot(rare_loot):
+    pass
 
 
 def fight(num_enemies, enemy, player):

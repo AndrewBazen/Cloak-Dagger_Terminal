@@ -1,7 +1,7 @@
 import sqlite3
 
 
-conn = sqlite3.connect('data/game_data.sqlite')
+conn = sqlite3.connect('data/game_data.db')
 
 c = conn.cursor()
 
