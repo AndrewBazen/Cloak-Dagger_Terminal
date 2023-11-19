@@ -12,12 +12,13 @@ class Adventurer:
         self.exp_to_next_lvl = 100
         self.ad_class = ''
         self.has_adv = False
+        self.num_attacks = 1
         self.max_hp = 15
         self.max_mp = 15
         self.hp = 15
         self.mp = 15
         self.backpack = {"Weapons": [], "Armor": [], "Consumables": [], "Other": []}
-        self.equipped = {"Main-hand": Weapon(), "Off-hand": Weapon(), "Armor": Armor()}
+        self.equipped = {"Weapon": Weapon(), "Armor": Armor()}
         self.stats = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
         self.ac = 0
         self.modifiers = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
@@ -80,18 +81,17 @@ class Adventurer:
                         print("That is not an option!")
                         bad_input = True
 
-    def attack(self, enemy):
+    def attack(self, enemy, weapon):
         if self.hp != 0:
             if self.has_adv:
-                if self.equipped["Weapon"].weapon_property == "versatile" or self.equipped["Weapon"].weapon_property ==\
-                        "heavy" or self.equipped["Weapon"].weapon_property == "light":
+                if weapon.weapon_type == "versatile" or self.equipped["Off-hand"].weapon_type == "two-handed" \
+                    or self.equipped["Main-hand"].weapon_type == "heavy":
                     hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"]
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
                     dice_roll.attack_roll(hit_roll, self, enemy)
-                elif self.equipped["Weapon"].weapon_property == "finesse" or self.equipped["Weapon"].weapon_property ==\
-                        "thrown" or self.equipped["Weapon"].weapon_property == "ammunition" or \
-                        self.equipped["Weapon"].weapon_property == "light":
+                elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
+                        "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
                     hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["dex"]
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
@@ -102,15 +102,14 @@ class Adventurer:
                     print(f"You rolled a {hit_roll}!")
                     dice_roll.attack_roll(hit_roll, self, enemy)
             elif not self.has_adv:
-                if self.equipped["Weapon"].weapon_property == "versatile" or self.equipped["Weapon"].weapon_property ==\
-                        "heavy" or self.equipped["Weapon"].weapon_property == "light":
-                    hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["str"]
+                if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
+                    or self.equipped["Weapon"].weapon_type == "heavy":
+                    hit_roll = max(dice_roll.roll(1, "d20")[0]) + self.modifiers["str"]
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
                     dice_roll.attack_roll(hit_roll, self, enemy)
-                elif self.equipped["Weapon"].weapon_property == "finesse" or self.equipped["Weapon"].weapon_property ==\
-                        "thrown" or self.equipped["Weapon"].weapon_property == "ammunition" or \
-                        self.equipped["Weapon"].weapon_property == "light":
+                elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
+                        "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
                     hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["dex"]
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
@@ -294,7 +293,6 @@ class Weapon(Item):
                  damage_dice=(), bonus=0):
         super().__init__(name, item_type, rarity, description)
         self.weapon_type = weapon_type
-        self.weapon_type = ""
         self.effect = effect
         self.effect_dice = effect_dice
         self.damage_dice = damage_dice
@@ -508,7 +506,6 @@ def main():
         "Plate": Armor("Plate", "armor", "rare", "A simple sword", 15, 0),
         "Half-Plate": Armor("Half-Plate", "armor", "uncommon", "A simple sword", 14, 0),
         "Scale": Armor("Scale", "armor", "common", "A simple sword", 12, 0),
-        "Shield": Armor("Shield", "armor", "common", "A simple sword", 2, 0),
         
     }
     loot = {
@@ -532,7 +529,7 @@ def main():
     races = ["elf", "dwarf", "teifling", "halfling", "goliath"]
     classes = ["barbarian", "rogue", "ranger", "paladin", "cleric", "wizard", "warlock", "fighter"]
     ad = Adventurer()
-    ad.set_starting_equip(equipment)
+    ad.set_starting_equip()
 
     custom_banner = Figlet(font='rozzo')
     print(custom_banner.renderText('Cloak\n   &\nDagger'))
