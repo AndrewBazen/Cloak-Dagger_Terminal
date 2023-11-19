@@ -1,16 +1,7 @@
 import random
 import dice_roll
-import requests
-from ast import literal_eval
 from pyfiglet import Figlet
-from bs4 import BeautifulSoup
-import sqlite3
 import dungeon
-
-conn = sqlite3.connect('/data/game_data.sqlite')
-
-c = conn.cursor()
-
 
 class Adventurer:
 
@@ -26,7 +17,7 @@ class Adventurer:
         self.hp = 15
         self.mp = 15
         self.backpack = {"Weapons": [], "Armor": [], "Consumables": [], "Other": []}
-        self.equipped = {"Weapon": Weapon(), "Armor": Armor()}
+        self.equipped = {"Main-hand": Weapon(), "Off-hand": Weapon(), "Armor": Armor()}
         self.stats = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
         self.ac = 0
         self.modifiers = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
@@ -494,7 +485,30 @@ def fight(num_enemies, enemy, player):
 def main():
     choice = 0
     curr_char_alive = True
-    equipment = {
+    weapons = {
+        "Shortsword": Weapon("Shortsword", "weapon", "common", "A simple sword", "simple", "", (1, 6), 0),
+        "Longsword": Weapon("Longsword", "uncommon", "common", "A simple sword", "versatile", "", (1, 8), 0),
+        "Greatsword": Weapon("Greatsword", "rare", "common", "A simple sword", "two-handed", "", (1, 10), 0),
+        "Rapier": Weapon("Rapier", "weapon", "common", "A simple sword", "finesse", "", (1, 8), 0),
+        "Dagger": Weapon("Dagger", "weapon", "common", "A simple sword", "simple", "", (1, 4), 0),
+        "Shortbow": Weapon("Shortbow", "weapon", "common", "A simple sword", "ranged", "", (1, 6), 0),
+        "Longbow": Weapon("Longbow", "weapon", "uncommon", "A simple sword", "ranged", "", (1, 8), 0),
+        "Greatbow": Weapon("Greatbow", "weapon", "rare", "A simple sword", "ranged", "", (1, 10), 0),
+        "Handaxe": Weapon("Handaxe", "weapon", "common", "A simple sword", "simple", "", (1, 6), 0),
+        "Battleaxe": Weapon("Battleaxe", "weapon", "uncommon", "A simple sword", "versatile", "", (1, 8), 0),
+        "Greataxe": Weapon("Greataxe", "weapon", "rare", "A simple sword", "two-handed", "", (1, 10), 0),
+        "Mace": Weapon("Mace", "weapon", "common", "A simple sword", "simple", "", (1, 6), 0),
+        "Warhammer": Weapon("Warhammer", "weapon", "uncommon", "A simple sword", "versatile", "", (1, 8), 0),
+        "BattleStaff": Weapon("staff", "weapon", "rare", "A simple sword", "two-handed", "", (1, 10), 0),
+        "Quarterstaff": Weapon("quarterstaff", "weapon", "common", "A simple sword", "simple", "", (1, 6), 0),
+    }
+    armor = {
+        "Leather": Armor("Leather", "armor", "common", "A simple sword", 11, 0),
+        "Chainmail": Armor("Chainmail", "armor", "uncommon", "A simple sword", 13, 0),
+        "Plate": Armor("Plate", "armor", "rare", "A simple sword", 15, 0),
+        "Half-Plate": Armor("Half-Plate", "armor", "uncommon", "A simple sword", 14, 0),
+        "Scale": Armor("Scale", "armor", "common", "A simple sword", 12, 0),
+        "Shield": Armor("Shield", "armor", "common", "A simple sword", 2, 0),
         
     }
     loot = {
