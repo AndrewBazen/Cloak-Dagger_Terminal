@@ -17,7 +17,14 @@ class Adventurer:
         self.max_mp = 15
         self.hp = 15
         self.mp = 15
-        self.backpack = {"Weapons": [], "Armor": [], "Consumables": [], "Other": []}
+        self.backpack = {"Weapons": [], "Armor": [], "Consumables": [
+                Consumable("Potion of Healing", "consumable", "common", "A potion that heals 1d4+1 health", "inc_health"),
+                Consumable("Potion of Mana", "consumable", "common", "A potion that heals 1d4+1 mana", "inc_mana"),
+            ], "Other": [
+                Item("Rope", "other", "common", "A 50ft rope"),
+                Item("Torch", "other", "common", "A torch"),
+                Item("Bedroll", "other", "common", "A bedroll"),
+            ]}
         self.equipped = {"Weapon": Weapon(), "Armor": Armor()}
         self.stats = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
         self.ac = 0
