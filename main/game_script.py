@@ -87,6 +87,24 @@ class Adventurer:
                     case _:
                         print("That is not an option!")
                         bad_input = True
+                        
+    def update_stats(self):
+        self.ac = 10 + self.modifiers["dex"]
+        self.max_hp = 15 + self.modifiers["con"]
+        self.max_mp = 15 + self.modifiers["int"]
+        self.hp = self.max_hp
+        self.mp = self.max_mp
+        
+    def level_up(self):
+        self.level += 1
+        self.exp_to_next_lvl += self.exp_to_next_lvl * 1.5
+        self.max_hp += dice_roll.roll(1, self.hit_dice)[1]
+        self.max_mp += dice_roll.roll(1, self.hit_dice)[1]
+        self.hp = self.max_hp
+        self.mp = self.max_mp
+        self.num_attacks += 1
+        self.update_stats()
+
     def attack(self, enemy):
         if self.hp != 0:
             if self.has_adv:
