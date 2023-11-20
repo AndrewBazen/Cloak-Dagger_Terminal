@@ -245,21 +245,15 @@ class Adventurer:
 
 class Enemy:
 
-    def __init__(self, name):
+    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats, modifiers):
         self.name = name
-        self.ch_rating = 0
-        self.backpack = []
-        self.equipped = {"Weapon": Item(), "Armor": Item()}
-        self.ac = 0
-        self.hp = 0
-        self.mp = 0
+        self.ch_rating = ch_rating
+        self.drop_class = drop_class
+        self.equipped = {"Weapon": Weapon(), "Armor": Armor()}
+        self.ac = ac
+        self.hp = hp
+        self.mp = mp
         self.stats = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
-        self.str = 0
-        self.dex = 0
-        self.con = 0
-        self.int = 0
-        self.wis = 0
-        self.cha = 0
         self.modifiers = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
 
     def attack(self, player):
