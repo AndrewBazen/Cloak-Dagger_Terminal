@@ -80,101 +80,102 @@ class Adventurer:
                     case _:
                         print("That is not an option!")
                         bad_input = True
-
-    def attack(self, enemy, weapon):
+    def attack(self, enemy):
         if self.hp != 0:
             if self.has_adv:
-                if weapon.weapon_type == "versatile" or self.equipped["Off-hand"].weapon_type == "two-handed" \
-                    or self.equipped["Main-hand"].weapon_type == "heavy":
-                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"]
+                if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
+                    or self.equipped["Weapon"].weapon_type == "heavy":
+                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
                     dice_roll.attack_roll(hit_roll, self, enemy)
                 elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
                         "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
-                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["dex"]
+                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["dex"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
                     dice_roll.attack_roll(hit_roll, self, enemy)
                 else:
-                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"]
+                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
                     dice_roll.attack_roll(hit_roll, self, enemy)
             elif not self.has_adv:
                 if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
                     or self.equipped["Weapon"].weapon_type == "heavy":
-                    hit_roll = max(dice_roll.roll(1, "d20")[0]) + self.modifiers["str"]
+                    hit_roll = max(dice_roll.roll(1, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
                     dice_roll.attack_roll(hit_roll, self, enemy)
                 elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
                         "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
-                    hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["dex"]
+                    hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["dex"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
                     dice_roll.attack_roll(hit_roll, self, enemy)
                 else:
-                    hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["str"]
+                    hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
                     dice_roll.attack_roll(hit_roll, self, enemy)
 
-    def set_starting_equip(self, equipment):
+    def set_starting_equip(self, weapons, armor):
         class_type = self.ad_class
         match class_type:
             case "barbarian":
-                self.equipped["Weapon"] = equipment[0]
-                self.equipped["Armor"] = equipment[17]
+                self.equipped["Weapon"] = weapons["Handaxe"]
+                self.equipped["Armor"] = armor["Hide"]
             case "rogue":
-                self.equipped["Weapon"] = equipment[9]
-                self.equipped["Armor"] = equipment[17]
+                self.equipped["Weapon"] = weapons["Dagger"]
+                self.equipped["Armor"] = armor["Leather"]
             case "ranger":
-                self.equipped["Weapon"] = equipment[24]
-                self.equipped["Armor"] = equipment[17]
+                self.equipped["Weapon"] = weapons["Shortbow"]
+                self.equipped["Armor"] = armor["Leather"]
             case "paladin":
-                self.equipped["Weapon"] = equipment[25]
-                self.equipped["Armor"] = equipment[17]
+                self.equipped["Weapon"] = weapons["Shortsword"]
+                self.equipped["Armor"] = armor["half-plate"]
             case "cleric":
-                self.equipped["Weapon"] = equipment[26]
-                self.equipped["Armor"] = equipment[17]
+                self.equipped["Weapon"] = weapons["Mace"]
+                self.equipped["Armor"] = armor["Chainmail"]
             case "wizard":
-                self.equipped["Weapon"] = equipment[33]
-                self.equipped["Armor"] = equipment[17]
+                self.equipped["Weapon"] = weapons["Quarterstaff"]
             case "warlock":
-                self.equipped["Weapon"] = equipment[40]
-                self.equipped["Armor"] = equipment[17]
+                self.equipped["Weapon"] = weapons["Quarterstaff"]
             case "fighter":
-                self.equipped["Weapon"] = equipment[40]
-                self.equipped["Armor"] = equipment[17]
+                self.equipped["Weapon"] = weapons["spear"]
+                self.equipped["Armor"] = armor["Leather"]
 
     def equip_weapon(self, item):
-        if self.equipped["Weapon"] != "":
+        if self.equipped["Weapon"] != "Empty":
             replace = input("You already have {cur} equipped, would you like to replace it with {item} "
                             "(y/n)?".format(cur=self.equipped["Weapon"], item=item))
             # replaces equipped weapon or places the new weapon in the backpack
             if replace == 'y' or replace == 'Y':
-                self.backpack["Weapons"].append(self.equipped["Weapon"])
+                self.add_item(self.equipped["Weapon"])
                 self.equipped["Weapon"] = item
                 print("You placed the {cur} in your backpack and equipped the "
                       "{item}".format(cur=self.equipped["Weapon"], item=item))
             elif replace == 'n' or replace == 'N':
+                self.add_item(item)
+                print("You placed the {item} in your backpack and equipped the ".format(item=item))
                 return
         else:
             self.equipped["Weapon"] = item
             print("You are now wielding the {item}".format(item=item))
 
     def equip_armor(self, item):
-        if self.equipped["Armor"] != "":
+        if self.equipped["Armor"] != "Empty":
             replace = input("You already have {cur} equipped, would you like to replace it with {item} "
                             "(y/n)?".format(cur=self.equipped["Armor"], item=item))
             # replaces equipped weapon or places the new weapon in the backpack
             if replace == 'y' or replace == 'Y':
-                self.backpack["Armor"].append(self.equipped["Armor"])
+                self.add_item(self.equipped["Armor"])
                 self.equipped["Armor"] = item
                 print("You placed the {cur} in your backpack and equipped the "
                       "{item}".format(cur=self.equipped["Armor"], item=item))
             elif replace == 'n' or replace == 'N':
+                self.add_item(item)
+                print("You placed the {item} in your backpack and equipped the ".format(item=item))
                 return
         else:
             self.equipped["Armor"] = item
@@ -279,22 +280,16 @@ class Item:
         self.rarity = ""
         self.description = ""
 
-
-    def interaction(self, target):
-        pass
-
     def __repr__(self):
         return f"--- {self.name} ---\nType: {self.item_type} Rarity: {self.rarity}\nDescription: {self.description}"
     
-    
 class Weapon(Item):
     
-    def __init__(self, name="Empty", item_type="weapon", rarity="common", description="", weapon_type="", effect="", effect_dice="",
-                 damage_dice=(), bonus=0):
+    def __init__(self, name="Empty", item_type="weapon", rarity="common", description="", weapon_type="",
+                 dmg_dice_num=1, damage_dice="", bonus=0):
         super().__init__(name, item_type, rarity, description)
         self.weapon_type = weapon_type
-        self.effect = effect
-        self.effect_dice = effect_dice
+        self.dmg_dice_num = dmg_dice_num
         self.damage_dice = damage_dice
         self.bonus = bonus
 
@@ -428,14 +423,6 @@ def reveal_room(room, ad):
             pass
 
 
-def get_enemies(enemies):
-    pass
-
-
-def get_equipment(equipment):
-    pass
-
-
 def get_loot(loot):
     pass
 
@@ -484,21 +471,22 @@ def main():
     choice = 0
     curr_char_alive = True
     weapons = {
-        "Shortsword": Weapon("Shortsword", "weapon", "common", "A simple sword", "simple", "", (1, 6), 0),
-        "Longsword": Weapon("Longsword", "uncommon", "common", "A simple sword", "versatile", "", (1, 8), 0),
-        "Greatsword": Weapon("Greatsword", "rare", "common", "A simple sword", "two-handed", "", (1, 10), 0),
-        "Rapier": Weapon("Rapier", "weapon", "common", "A simple sword", "finesse", "", (1, 8), 0),
-        "Dagger": Weapon("Dagger", "weapon", "common", "A simple sword", "simple", "", (1, 4), 0),
-        "Shortbow": Weapon("Shortbow", "weapon", "common", "A simple sword", "ranged", "", (1, 6), 0),
-        "Longbow": Weapon("Longbow", "weapon", "uncommon", "A simple sword", "ranged", "", (1, 8), 0),
-        "Greatbow": Weapon("Greatbow", "weapon", "rare", "A simple sword", "ranged", "", (1, 10), 0),
-        "Handaxe": Weapon("Handaxe", "weapon", "common", "A simple sword", "simple", "", (1, 6), 0),
-        "Battleaxe": Weapon("Battleaxe", "weapon", "uncommon", "A simple sword", "versatile", "", (1, 8), 0),
-        "Greataxe": Weapon("Greataxe", "weapon", "rare", "A simple sword", "two-handed", "", (1, 10), 0),
-        "Mace": Weapon("Mace", "weapon", "common", "A simple sword", "simple", "", (1, 6), 0),
-        "Warhammer": Weapon("Warhammer", "weapon", "uncommon", "A simple sword", "versatile", "", (1, 8), 0),
-        "BattleStaff": Weapon("staff", "weapon", "rare", "A simple sword", "two-handed", "", (1, 10), 0),
-        "Quarterstaff": Weapon("quarterstaff", "weapon", "common", "A simple sword", "simple", "", (1, 6), 0),
+        "Shortsword": Weapon("Shortsword", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
+        "Longsword": Weapon("Longsword", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
+        "Greatsword": Weapon("Greatsword", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
+        "Rapier": Weapon("Rapier", "weapon", "common", "A simple sword", "finesse", 1, "d8", 0),
+        "Dagger": Weapon("Dagger", "weapon", "common", "A simple sword", "simple", 1, "d4", 0),
+        "Shortbow": Weapon("Shortbow", "weapon", "common", "A simple sword", "ranged", 1, "d6", 0),
+        "Longbow": Weapon("Longbow", "weapon", "uncommon", "A simple sword", "ranged", 1, "d8", 0),
+        "Greatbow": Weapon("Greatbow", "weapon", "rare", "A simple sword", "ranged", 1, "d10", 0),
+        "Handaxe": Weapon("Handaxe", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
+        "Battleaxe": Weapon("Battleaxe", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
+        "Greataxe": Weapon("Greataxe", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
+        "Mace": Weapon("Mace", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
+        "Warhammer": Weapon("Warhammer", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
+        "BattleStaff": Weapon("staff", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
+        "Quarterstaff": Weapon("quarterstaff", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
+        "Spear": Weapon("spear", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
     }
     armor = {
         "Leather": Armor("Leather", "armor", "common", "A simple sword", 11, 0),
@@ -506,10 +494,9 @@ def main():
         "Plate": Armor("Plate", "armor", "rare", "A simple sword", 15, 0),
         "Half-Plate": Armor("Half-Plate", "armor", "uncommon", "A simple sword", 14, 0),
         "Scale": Armor("Scale", "armor", "common", "A simple sword", 12, 0),
-        
     }
     loot = {
-        
+      
     }
     rare_loot = {
         
@@ -528,8 +515,8 @@ def main():
     }
     races = ["elf", "dwarf", "teifling", "halfling", "goliath"]
     classes = ["barbarian", "rogue", "ranger", "paladin", "cleric", "wizard", "warlock", "fighter"]
+    
     ad = Adventurer()
-    ad.set_starting_equip()
 
     custom_banner = Figlet(font='rozzo')
     print(custom_banner.renderText('Cloak\n   &\nDagger'))
@@ -538,6 +525,7 @@ def main():
 
     while choice != "4":
         create_character(ad, classes, races)
+        ad.set_starting_equip(weapons, armor)
         print("\nHere are your stats!")
         ad_stats = dice_roll.roll_stats()
         print(ad_stats)
