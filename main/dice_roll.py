@@ -75,7 +75,7 @@ def roll_stats():
 def attack_roll(hit_roll, player, enemy):
     if hit_roll == 20:
         print("That's a CRITICAL HIT!!")
-        dmg = roll(int(player.equipped["Weapon"].dmg_dice_num), player.equipped["Weapon"].dmg_dice)
+        dmg = roll(player.equipped["Weapon"].dmg_dice_num, player.equipped["Weapon"].damage_dice)
         damage = dmg[1] * 2
         if enemy.hp > damage:
             enemy.hp -= damage
@@ -85,7 +85,7 @@ def attack_roll(hit_roll, player, enemy):
             print("\n")
             print(f"You decimated the {enemy.name}!")
     elif hit_roll >= enemy.ac:
-        dmg = roll(int(player.equipped["Weapon"].dmg_dice_num), player.equipped["Weapon"].dmg_dice)
+        dmg = roll(player.equipped["Weapon"].dmg_dice_num, player.equipped["Weapon"].damage_dice)
         damage = dmg[1]
         if enemy.hp > damage:
             enemy.hp -= damage
