@@ -294,15 +294,16 @@ class Race:
 
 class Enemy:
 
-    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats, modifiers):
+    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats):
         self.name = name
         self.ch_rating = ch_rating
+        self.base_experience = ch_rating * 100
         self.drop_class = drop_class
         self.equipped = {"Weapon": Weapon(), "Armor": Armor()}
         self.ac = ac
         self.hp = hp
         self.mp = mp
-        self.stats = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
+        self.stats = stats
         self.modifiers = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
 
     def attack(self, player):
