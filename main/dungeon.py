@@ -66,7 +66,7 @@ class LinkedList:
         return self.head is None
 
 
-def create_dungeon(player_level, loot, rare_loot, puzzle_keys, enemies, bosses, num_rooms, puzzles):
+def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
     dungeon = LinkedList()
     dungeon.head = RoomNode("boss room", 1, bosses[random.randint(0, 3)], rare_loot[0])
     counter = num_rooms
