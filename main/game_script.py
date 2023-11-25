@@ -531,13 +531,10 @@ def get_rare_loot(rare_loot):
     pass
 
 
-def fight(num_enemies, enemy, player):
-    done = False
-    while player.hp > 0 and num_enemies > 0:
-        new_enemy = enemy
-        while not done:
-            print(f"{enemy.name}s left: {num_enemies}")
-            print(f"Current {enemy.name}s health: {enemy.hp}")
+    win = False
+        while not win:
+            print(f"{room.enemy[num_enemies-1].name}s left: {num_enemies}")
+            print(f"Current {room.enemy[num_enemies-1].name}s health: {room.enemy[num_enemies-1].hp}")
             print("\n")
             print(f"Your health: {player.hp}")
             print("\n")
@@ -556,15 +553,15 @@ def fight(num_enemies, enemy, player):
                         else:
                             print("That item is not in your backpack!")
                 case 3:
-                    player.attack(new_enemy)
-                    if new_enemy.hp <= 0:
+                    player.attack(room.enemy[num_enemies-1])
+                    if room.enemy[num_enemies-1].hp <= 0:              # checks if the enemy is dead
                         num_enemies -= 1
                         print("\n")
                         print(f"There are {num_enemies} left!")
                     else:
-                        result = new_enemy.attack(player)
-                        if result:
-                            return result
+                        room.enemy[num_enemies-1].attack(player)       # enemy attacks
+            if num_enemies == 0:
+                win = True
 
 
 def main():
