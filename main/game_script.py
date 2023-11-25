@@ -594,27 +594,28 @@ def main():
         "Half-Plate": Armor("Half-Plate", "armor", "uncommon", "A simple sword", 14, 0),
         "Scale": Armor("Scale", "armor", "common", "A simple sword", 12, 0),
     }
-    loot = {
-      
-    }
-    rare_loot = {
-        
-    }
-    enemies = {
-        
-    }
-    bosses = {
-        
-    }
-    puzzles = {
-        
-    }
-    puzzle_keys = {
-        
-    }
-    races = ["elf", "dwarf", "teifling", "halfling", "goliath"]
-    classes = ["barbarian", "rogue", "ranger", "paladin", "cleric", "wizard", "warlock", "fighter"]
-    
+    loot = [
+        Item("Gold", "other", "uncommon", "A small pile of gold"),
+        Item("Silver", "other", "common", "A small pile of silver"),
+        Item("Small bag of gems", "other", "rare", "A small bag of gems"),
+        Item("Platinum bar", "other", "rare", "A platinum bar"),
+        Item("Gold bar", "other", "rare", "A gold bar"),
+        Item("Jeweled egg", "other", "rare", "A jeweled egg"),
+        Weapon("Poisoned Dagger", "weapon", "rare", "A dagger with a poison tip", "simple", 1, "d4", dice_roll.roll(1, "d4")[1]),
+        Armor("Armor of protection", "magic-armor", "rare", "magically fortified armor", 13, dice_roll.roll(1, "d4")[1]),
+        Consumable("Potion of healing", "consumable", "common", "A potion that heals 1d4 health", "inc_health", ("d4", 1)),
+        Consumable("Potion of mana", "consumable", "common", "A potion that restores 1d4 mana", "inc_mana", ("d4", 1)),
+        Consumable("Potion of strength", "consumable", "common", "A potion that increases strength by 1d4", "inc_str", ("d4", 1)),
+        Consumable("Potion of dexterity", "consumable", "common", "A potion that increases dexterity by 1d4", "inc_dex", ("d4", 1)),
+        Consumable("Potion of resistance", "consumable", "common", "A potion that increases constitution by 1d4", "inc_con", ("d4", 1)),
+    ]
+    rare_loot = [
+        Weapon("Sword of the Sun", "magic_weapon", "legendary", "A sword that glows with the power of the sun", "versatile", 1, "d8", dice_roll.roll(1, "d6")[1]),
+        Weapon("Hammer of Vodr", "magic_weapon", "legendary", "A hammer powered by divine energy", "two-handed", 1, "d10", dice_roll.roll(1, "d6")[1]),
+        Armor("Armor of the Gods", "magic_armor", "legendary", "Armor that is blessed by the gods", 16, dice_roll.roll(1, "d6")[1]),
+        Consumable("Potion of the Gods", "consumable", "legendary", "A potion that increases all stats by 1d6", "inc_all", ("d6", 1)),
+        Armor("Ancient Armor", "magic_armor", "legendary", "Armor that is blessed by the gods", 15, dice_roll.roll(1, "d6")[1]),
+    ]
     ad = Adventurer()
 
     custom_banner = Figlet(font='rozzo')
