@@ -586,7 +586,9 @@ def main():
         "Spear": Weapon("spear", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
     }
     armor = {
+        "Hide": Armor("Hide", "armor", "common", "A simple sword", 10, 0),
         "Leather": Armor("Leather", "armor", "common", "A simple sword", 11, 0),
+        "Studded Leather": Armor("Studded Leather", "armor", "uncommon", "A simple sword", 12, 0),
         "Chainmail": Armor("Chainmail", "armor", "uncommon", "A simple sword", 13, 0),
         "Plate": Armor("Plate", "armor", "rare", "A simple sword", 15, 0),
         "Half-Plate": Armor("Half-Plate", "armor", "uncommon", "A simple sword", 14, 0),
