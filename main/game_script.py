@@ -10,10 +10,11 @@ class Adventurer:
         self.name = ""
         self.race = Race()
         self.level = 1
+        self.total_exp = 0
         self.exp_to_next_lvl = 100
         self.ad_class = AdClass()
         self.has_adv = False
-        self.num_attacks = 1
+        self.num_actions = 1
         self.max_hp = 15
         self.max_mp = 15
         self.hp = 15
