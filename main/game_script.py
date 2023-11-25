@@ -45,10 +45,10 @@ class Adventurer:
                 choice = input("Which stat would you like to put {stat} into?".format(stat=stat))
                 match choice:
                     case "1":
-                        self.stats["str"] = stat
+                        self.stats["str"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
                     case "2":
-                        self.stats["dex"] = stat
+                        self.stats["dex"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
                     case "3":
                         if stat < 10:
@@ -63,7 +63,7 @@ class Adventurer:
                         elif stat > 18:
                             self.max_hp += 3
                             self.hp = self.max_hp
-                        self.stats["con"] = stat
+                        self.stats["con"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
                     case "4":
                         if stat < 10:
@@ -78,13 +78,13 @@ class Adventurer:
                         elif stat > 18:
                             self.max_mp += 3
                             self.mp = self.max_mp
-                        self.stats["int"] = stat
+                        self.stats["int"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
                     case "5":
-                        self.stats["wis"] = stat
+                        self.stats["wis"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
                     case "6":
-                        self.stats["cha"] = stat
+                        self.stats["cha"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
                     case _:
                         print("That is not an option!")
