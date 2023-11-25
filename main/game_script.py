@@ -91,7 +91,7 @@ class Adventurer:
                         bad_input = True
                         
     def update_stats(self):
-        self.ac = 10 + self.modifiers["dex"]
+            self.ac = self.equipped["Armor"].ac + self.modifiers["dex"]
         self.max_hp = 15 + self.modifiers["con"]
         self.max_mp = 15 + self.modifiers["int"]
         self.hp = self.max_hp
