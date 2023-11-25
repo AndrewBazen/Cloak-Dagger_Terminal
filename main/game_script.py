@@ -350,6 +350,13 @@ class Enemy:
         return f"--- {self.name} ---\nChallenge Rating: {self.ch_rating}\nArmor Class: {self.ac}\nHP: {self.hp}  " \
                f"MP: {self.mp}"
                
+class Boss(Enemy):
+    
+    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats, modifiers, special_attack):
+        super().__init__(name, ch_rating, drop_class, ac, hp, mp, stats, modifiers)
+        self.special_attack = special_attack
+        
+        
 class Item:
 
     def __init__(self, name="Empty", item_type="other", rarity="common", description=""):
