@@ -616,6 +616,17 @@ def main():
         Consumable("Potion of the Gods", "consumable", "legendary", "A potion that increases all stats by 1d6", "inc_all", ("d6", 1)),
         Armor("Ancient Armor", "magic_armor", "legendary", "Armor that is blessed by the gods", 15, dice_roll.roll(1, "d6")[1]),
     ]
+    spells = [
+        Spell("Fireball", 3, "fire", "d6", 8, 5, 5),
+        Spell("Lightning Bolt", 3, "lightning", "d6", 8, 5, 3),
+        Spell("Magic Missile", 1, "force", "d4", 3, 1, 3),
+        Spell("Cure Wounds", 1, "healing", "d8", 1, 1, 1),
+        Spell("Healing Word", 1, "healing", "d4", 1, 1, 1),
+        Spell("Chill Touch", 1, "necrotic", "d8", 1, 1, 1),
+        Spell("Ray of Frost", 1, "cold", "d8", 1, 1, 1),
+        Spell("Acid Splash", 1, "acid", "d6", 1, 1, 2),
+        Spell("Viscious Mockery", 1, "psychic", "d4", 1, 1, 1),
+    ]
     ad = Adventurer()
 
     custom_banner = Figlet(font='rozzo')
