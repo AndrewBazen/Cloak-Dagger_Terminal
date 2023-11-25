@@ -757,9 +757,9 @@ def main():
         "Greataxe": Weapon("Greataxe", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
         "Mace": Weapon("Mace", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
         "Warhammer": Weapon("Warhammer", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
-        "Staff": Weapon("Staff", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
-        "Quarterstaff": Weapon("Quarterstaff", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
-        "Spear": Weapon("Spear", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
+        "BattleStaff": Weapon("staff", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
+        "Quarterstaff": Weapon("quarterstaff", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
+        "Spear": Weapon("spear", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
     }
     armor = {
         "Hide": Armor("Hide", "armor", "common", "A simple sword", 10, 0),
