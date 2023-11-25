@@ -5,6 +5,9 @@ import dungeon
 
 
 class Adventurer:
+    """
+    the class for the player object
+    """
 
     def __init__(self):
         self.name = ""
@@ -19,6 +22,7 @@ class Adventurer:
         self.max_mp = 15
         self.hp = 15
         self.mp = 15
+        # creates a dictionary for the player's backpack and preloads it with some items
         self.backpack = {"Weapons": [], "Armor": [], "Consumables": [
                 Consumable("Potion of Healing", "consumable", "common", "A potion that heals 1d4+1 health", "inc_health"),
                 Consumable("Potion of Mana", "consumable", "common", "A potion that heals 1d4+1 mana", "inc_mana"),
@@ -33,24 +37,33 @@ class Adventurer:
         self.modifiers = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
 
     def set_player_stats(self, stats):
+        """
+        prompts the user to set their stats
+
+        Args:
+            stats (Dictionary): the stats of the player
+        """
         print("Stats: 1. str")
         print("       2. dex")
         print("       3. con")
         print("       4. int")
         print("       5. wis")
         print("       6. cha")
-        for stat in stats:
+        for stat in stats:               # iterates through the stats
             bad_input = True
+            
+            # while loop to check if the user input is valid
             while bad_input:
-                choice = input("Which stat would you like to put {stat} into?".format(stat=stat))
+                choice = input("Which stat would you like to put {stat} into?".format(stat=stat))    # prompts the user to choose a stat
                 match choice:
-                    case "1":
+                    case "1":        # checks if the user chose strength
                         self.stats["str"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
-                    case "2":
+                    case "2":        # checks if the user chose dexterity
                         self.stats["dex"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
-                    case "3":
+                    case "3":        # checks if the user chose constitution
+                        # modifies the max hp based on the constitution stat
                         if stat < 10:
                             self.max_hp -= 1
                             self.hp = self.max_hp
@@ -65,7 +78,8 @@ class Adventurer:
                             self.hp = self.max_hp
                         self.stats["con"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
-                    case "4":
+                    case "4":       # checks if the user chose intelligence
+                        # modifies the max mp based on the intelligence stat
                         if stat < 10:
                             self.max_mp -= 1
                             self.mp = self.max_mp
@@ -80,17 +94,21 @@ class Adventurer:
                             self.mp = self.max_mp
                         self.stats["int"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
-                    case "5":
+                    case "5":      # checks if the user chose wisdom
                         self.stats["wis"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
-                    case "6":
+                    case "6":     # checks if the user chose charisma
                         self.stats["cha"] = stat + self.race.modifiers["str"] + self.ad_class.modifiers["str"]
                         bad_input = False
-                    case _:
+                    case _:      # checks if the user chose an invalid option
                         print("That is not an option!")
                         bad_input = True
                         
     def update_stats(self):
+        """
+        recalculates the stats of the player
+        """
+        if self.equipped["Armor"] != "Empty":
             self.ac = self.equipped["Armor"].ac + self.modifiers["dex"]
         self.max_hp = 15 + self.modifiers["con"]
         self.max_mp = 15 + self.modifiers["int"]
@@ -98,6 +116,9 @@ class Adventurer:
         self.mp = self.max_mp
         
     def level_up(self):
+        """
+        adds a level to the player and adjusts the stats accordingly
+        """
         self.level += 1
         self.exp_to_next_lvl += self.exp_to_next_lvl * 1.5
         self.max_hp += dice_roll.roll(1, self.hit_dice)[1]
@@ -105,11 +126,21 @@ class Adventurer:
         self.hp = self.max_hp
         self.mp = self.max_mp
         self.num_attacks += 1
-        self.update_stats()
 
     def attack(self, enemy):
-        if self.hp != 0:
+        """
+        attack function for the player
+
+        Args:
+            enemy (Enemy): the enemy object
+
+        Returns:
+            Boolean: True if the player hits, False if the player misses
+        """
+        if self.hp != 0:     # checks if the player is alive
+            # checks if the player has advantage or not
             if self.has_adv:
+                # checks if the player has a strength or dexterity based weapon
                 if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
                     or self.equipped["Weapon"].weapon_type == "heavy":
                     hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
@@ -148,34 +179,48 @@ class Adventurer:
             return result
 
     def set_starting_equip(self, weapons, armor):
+        """
+        sets the starting equipment for the player based on their class
+
+        Args:
+            weapons (Dictionary): the weapons dictionary
+            armor (Dictionary): the armor dictionary
+        """
         class_type = self.ad_class
         match class_type:
-            case "barbarian":
+            case "barbarian":    # checks if the player is a barbarian
                 self.equipped["Weapon"] = weapons["Handaxe"]
                 self.equipped["Armor"] = armor["Hide"]
-            case "rogue":
+            case "rogue":        # checks if the player is a rogue
                 self.equipped["Weapon"] = weapons["Dagger"]
                 self.equipped["Armor"] = armor["Leather"]
-            case "ranger":
+            case "ranger":       # checks if the player is a ranger
                 self.equipped["Weapon"] = weapons["Shortbow"]
                 self.equipped["Armor"] = armor["Leather"]
-            case "paladin":
+            case "paladin":      # checks if the player is a paladin
                 self.equipped["Weapon"] = weapons["Shortsword"]
                 self.equipped["Armor"] = armor["half-plate"]
-            case "cleric":
+            case "cleric":       # checks if the player is a cleric
                 self.equipped["Weapon"] = weapons["Mace"]
                 self.equipped["Armor"] = armor["Chainmail"]
-            case "wizard":
+            case "wizard":       # checks if the player is a wizard
                 self.equipped["Weapon"] = weapons["Quarterstaff"]
-            case "warlock":
+            case "warlock":      # checks if the player is a warlock
                 self.equipped["Weapon"] = weapons["Quarterstaff"]
-            case "fighter":
+            case "fighter":      # checks if the player is a fighter
                 self.equipped["Weapon"] = weapons["spear"]
                 self.equipped["Armor"] = armor["Leather"]
 
     def equip_weapon(self, item):
-        if self.equipped["Weapon"] != "Empty":
-            replace = input("You already have {cur} equipped, would you like to replace it with {item} "
+        """
+        equips a weapon to the player or replaces the equipped weapon
+
+        Args:
+            item (Weapon): the weapon to be equipped
+        """
+        if self.equipped["Weapon"] != "Empty":    # checks if the weapon slot is empty
+            # asks the user if they want to replace the equipped weapon
+            replace = input("You already have {cur} equipped, would you like to replace it with {item} " 
                             "(y/n)?".format(cur=self.equipped["Weapon"], item=item))
             # replaces equipped weapon or places the new weapon in the backpack
             if replace == 'y' or replace == 'Y':
@@ -187,12 +232,19 @@ class Adventurer:
                 self.add_item(item)
                 print("You placed the {item} in your backpack and equipped the ".format(item=item))
                 return
-        else:
-            self.equipped["Weapon"] = item
+        else:  # if the weapon slot is empty equip the weapon
+            self.equipped["Weapon"] = item   
             print("You are now wielding the {item}".format(item=item))
 
     def equip_armor(self, item):
-        if self.equipped["Armor"] != "Empty":
+        """
+        equips armor to the player or replaces the equipped armor
+
+        Args:
+            item (Armor): the armor to be equipped
+        """
+        if self.equipped["Armor"] != "Empty":  # checks if the armor slot is empty
+            # asks the user if they want to replace the equipped armor
             replace = input("You already have {cur} equipped, would you like to replace it with {item} "
                             "(y/n)?".format(cur=self.equipped["Armor"], item=item))
             # replaces equipped weapon or places the new weapon in the backpack
@@ -205,20 +257,23 @@ class Adventurer:
                 self.add_item(item)
                 print("You placed the {item} in your backpack and equipped the ".format(item=item))
                 return
-        else:
+        else: # if the armor slot is empty equip the armor
             self.equipped["Armor"] = item
             print("You are now wielding the {item}".format(item=item))
 
     def add_item(self, item):
-        # check if the item is a consumable, weapon, armor, or other
+        """
+        adds an item to the player's backpack
+
+        Args:
+            item (Item): the item to be added
+        """
+        # check if the item is a consumable, weapon, armor, or other item
         if item.item_type == "consumable":
-            # place it in the backpack print a message
             self.backpack["Consumables"].append(item)
             print("You placed the {item} in your backpack".format(item=item))
-        elif item.item_type == "weapon" or item.item_type == "magic_weapon":
-            # checks if the user wants to equip the new weapon
+        elif item.item_type == "weapon" or item.item_type == "magic_weapon": 
             ans = input("Would you like to equip {item} (y/n)?")
-            # if the weapon slot is empty it is equipped otherwise it asks to replace weapons
             if ans == 'y' or ans == 'Y':
                 self.equip_weapon(item)
             elif ans == 'n' or ans == 'N':
@@ -232,35 +287,46 @@ class Adventurer:
                 self.backpack["Armor"].append(item)
                 print("You placed the {item} in your backpack".format(item=item))
         else:
-            # place it in the backpack print a message
+
             self.backpack["Other"].append(item)
             print("You placed the {item} in your backpack".format(item=item))
 
     def use_item(self, item, target):
+        """
+        allows the player to use an item, checking if it is a consumable or other item and its effect
+
+        Args:
+            item (Item): the item to be used
+            target (Enemy): the enemy to be targeted
+        """
         if item.item_type == "consumable":
             effect = dice_roll.roll(item.effect_dice[0], item.effect_dice[1])
-            if item.effect == "inc_health" and effect < self.max_hp - self.hp:
+            if item.effect == "inc_health" and effect < self.max_hp - self.hp:                     # if effect is less than total lost health
                 self.hp += effect
                 print("You use the {item} and regain {hp} health!".format(item=item, hp=effect))
                 print("Your health is now {hp}/{max}".format(hp=self.hp, max=self.max_hp))
-            elif item.effect == "inc_health" and effect >= self.max_hp - self.hp:
+            elif item.effect == "inc_health" and effect >= self.max_hp - self.hp:                  # if effect is greater than total lost health
                 self.hp = self.max_hp
                 print("You use the {item} and regain {hp} health!".format(item=item, hp=effect))
                 print("Your health is now {hp}/{max}".format(hp=self.hp, max=self.max_hp))
-            elif item.effect == "inc_mana" and effect < self.max_mp - self.mp:
+            elif item.effect == "inc_mana" and effect < self.max_mp - self.mp:                     # if effect is less than total lost mana
                 self.mp += effect
                 print("You use the {item} and regain {mp} mana!".format(item=item, mp=effect))
                 print("Your health is now {mp}/{max}".format(mp=self.mp, max=self.max_mp))
-            elif item.effect == "inc_mana" and effect >= self.max_mp - self.mp:
+            elif item.effect == "inc_mana" and effect >= self.max_mp - self.mp:                    # if effect is greater than total lost mana
                 self.mp = self.max_mp
                 print("You use the {item} and regain {mp} health!".format(item=item, mp=effect))
                 print("Your health is now {mp}/{max}".format(mp=self.mp, max=self.max_mp))
+        # TODO: add other item effects
         elif item.item_type == "other":
-            return item.interaction(target)
+            item.interaction(target)    # TODO: add interaction function to other items
         else:
             print("That is not a usable item!")
 
     def check_inventory(self):
+        """
+        prints the inventory of the player
+        """
         for item in self.backpack:
             print("- {item}".format(item=item))
             for i in self.backpack[item]:
@@ -293,6 +359,9 @@ class Race:
 
 
 class Enemy:
+    """
+    class for enemy objects
+    """
 
     def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats):
         self.name = name
@@ -307,8 +376,20 @@ class Enemy:
         self.modifiers = {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}
 
     def attack(self, player):
+        """
+        the attack function for enemies
+
+        Args:
+            player (Adventurer): the player object
+
+        Returns:
+            Boolean: True if the enemy hits, False if the enemy misses
+        """
+        # checks if the enemy is alive
         if self.hp != 0:
+            # checks if the enemy has advantage or not
             if self.has_adv:
+                # checks if the enemy has a strength or dexterity based weapon
                 if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
                     or self.equipped["Weapon"].weapon_type == "heavy":
                     hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
@@ -351,6 +432,12 @@ class Enemy:
                f"MP: {self.mp}"
                
 class Boss(Enemy):
+    """
+    boss class
+
+    Args:
+        Enemy (Class): the parent class
+    """
     
     def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats, modifiers, special_attack):
         super().__init__(name, ch_rating, drop_class, ac, hp, mp, stats, modifiers)
@@ -358,6 +445,9 @@ class Boss(Enemy):
         
         
 class Spell():
+    """
+    the parent class for all spells
+    """
     
     def __init__(self, name, level, dmg_type, dmg_dice, dmg_dice_num, mp_cost, num_targets):
         self.name = name
@@ -369,6 +459,9 @@ class Spell():
         self.num_targets = num_targets
                
 class Item:
+    """
+    the parent class for all items
+    """
 
     def __init__(self, name="Empty", item_type="other", rarity="common", description=""):
         self.name = name
@@ -380,6 +473,12 @@ class Item:
         return f"--- {self.name} ---\nType: {self.item_type} Rarity: {self.rarity}\nDescription: {self.description}"
     
 class Weapon(Item):
+    """
+    class for weapon items
+
+    Args:
+        Item (Class): the parent class
+    """
     
     def __init__(self, name="Empty", item_type="weapon", rarity="common", description="", weapon_type="",
                  dmg_dice_num=1, damage_dice="", bonus=0):
@@ -390,6 +489,12 @@ class Weapon(Item):
         self.bonus = bonus
 
 class Armor(Item):
+    """
+    class for armor items
+
+    Args:
+        Item (Class): the parent class
+    """
     
     def __init__(self, name="Empty", item_type="armor", rarity="common", description="", ac=0, bonus=0):
         super().__init__(name, item_type, rarity, description)
@@ -397,6 +502,12 @@ class Armor(Item):
         self.bonus = bonus
         
 class Consumable(Item):
+    """
+    class for consumable items
+
+    Args:
+        Item (Class): the parent class
+    """
     
     def __init__(self, name="Empty", item_type="consumable", rarity="common", description="", effect="",
                  effect_dice=()):
@@ -407,6 +518,12 @@ class Consumable(Item):
 
 
 def set_modifiers(player):
+    """
+    generates the modifiers for the player based on their stats
+
+    Args:
+        player (Adventurer): the player object
+    """
     stats = player.stats.items()
     for stat in stats:
         if 6 <= stat[1] <= 7:
@@ -424,6 +541,20 @@ def set_modifiers(player):
 
 
 def create_character(ad, classes, races):
+    """
+    This function creates a character with a given name, race, and class.
+
+    Parameters:
+    ad (Adventurer): The adventurer object to modify.
+    classes (list): A list of available classes.
+    races (list): A list of available races.
+
+    Returns:
+    None
+    """
+    keep_character = False           # boolean to keep the character          
+    
+    # while loop to keep the character                  
     while not keep_character:                                                     
         ad.name = input("What is your name, Adventurer?")                          
         print(f"\nHello {ad.name}, what race are you?\n")                       
@@ -442,25 +573,28 @@ def create_character(ad, classes, races):
                     continue
             if ad.race == "":
                 print("That race does not exist! please choose another")
-
         print("\nWhat class are you?\n")
         print("--- Classes ---")
         for cl in classes:
             print(cl)
         print("\n")
+        
+        # While loop to check if an available class has been chosen
         while ad.ad_class == "":
             temp_class = input("")
             if temp_class in classes:
                 ad.ad_class = temp_class
             else:
                 print("That class does not exist! please choose another")
-
+                
+        # Prints the character and asks if the user wants to keep it
         print("Here is your adventurer!\n")
         print(f"--- {ad.name} ---")
         print(f"Race: {ad.race}")
         print(f"Class: {ad.ad_class}")
         print("would you like to keep this character and roll stats? (y/n)")
 
+        # While loop to check if the user wants to keep the character
         correct_input = False
         while not correct_input:
             ad_choice = input("")
@@ -476,6 +610,9 @@ def create_character(ad, classes, races):
 
 
 def main_menu():
+    """
+    This function prints the main menu for the game.
+    """
     print("****      Game Menu      ****")
     print("1. Check Character")
     print("2. Check Inventory")
@@ -484,6 +621,9 @@ def main_menu():
 
 
 def in_game_menu():
+    """
+    This function prints the in-game menu for the game.
+    """
     print("****      Game Menu      ****")
     print("1. Check Character")
     print("2. Check Inventory")
@@ -493,6 +633,9 @@ def in_game_menu():
 
 
 def inventory_menu():
+    """
+    This function prints the inventory menu for the game.
+    """
     print("****      Inventory Menu      ****")
     print("1. List inventory")
     print("2. Equip item")
@@ -500,6 +643,9 @@ def inventory_menu():
 
 
 def fight_menu():
+    """
+    This function prints the fight menu for the game.
+    """
     print("****      Fight      ****")
     print("1. List inventory")
     print("2. Use item")
@@ -508,6 +654,16 @@ def fight_menu():
 
 
 def reveal_room(room, ad):
+    """
+    Prints the room description and the enemies in the room.
+
+    Args:
+        room (RoomNode): the room object
+        ad (Adventurer): the player object
+
+    Returns:
+        Boolean: True if the player dies, False if the player wins
+    """
     room_type = room.val
     match room_type:
         case "Fight room":
@@ -515,11 +671,11 @@ def reveal_room(room, ad):
             game_over = fight(room.num_enemies, room.enemies, ad)
             if game_over:
                 return game_over
-        case "Loot room":
+        case "Loot room":             #TODO: add loot room
             pass
-        case "Empty room":
+        case "Rest room":             #TODO: add rest room
             pass
-        case "boss room":
+        case "boss room":             #TODO: add boss room
             pass
 
 
@@ -531,7 +687,20 @@ def get_rare_loot(rare_loot):
     pass
 
 
+def fight(num_enemies, room, player):
+    """ 
+    This function runs the fight between the player and the enemies.
+
+    Args:
+        num_enemies (int): the number of enemies in the room
+        enemy (Enemy): the enemy object
+        player (Adventurer): the player object
+
+    Returns:
+        boolean: True if the player dies, False if the player wins
+    """
     win = False
+    while player.hp > 0 and num_enemies > 0:             # while player is alive and there are enemies left
         while not win:
             print(f"{room.enemy[num_enemies-1].name}s left: {num_enemies}")
             print(f"Current {room.enemy[num_enemies-1].name}s health: {room.enemy[num_enemies-1].hp}")
@@ -541,9 +710,9 @@ def get_rare_loot(rare_loot):
             fight_menu()
             fight_option = input("What would you like to do?")
             match int(fight_option):
-                case 1:
+                case 1:                        # list inventory
                     player.check_inventory()
-                case 2:
+                case 2:                        # use item
                     print("\n")
                     player.check_inventory()
                     use = input("Which item would you like to use?")
@@ -552,7 +721,7 @@ def get_rare_loot(rare_loot):
                             player.use_item(item)
                         else:
                             print("That item is not in your backpack!")
-                case 3:
+                case 3:                        # attack
                     player.attack(room.enemy[num_enemies-1])
                     if room.enemy[num_enemies-1].hp <= 0:              # checks if the enemy is dead
                         num_enemies -= 1
@@ -565,8 +734,15 @@ def get_rare_loot(rare_loot):
 
 
 def main():
+    """
+    This function runs the game.
+    """
     choice = 0
     curr_char_alive = True
+    
+    """
+    These lists create all of the items, weapons, armor, spells, and enemies in the game, also creating bonuses.
+    """
     weapons = {
         "Shortsword": Weapon("Shortsword", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
         "Longsword": Weapon("Longsword", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
@@ -581,9 +757,9 @@ def main():
         "Greataxe": Weapon("Greataxe", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
         "Mace": Weapon("Mace", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
         "Warhammer": Weapon("Warhammer", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
-        "BattleStaff": Weapon("staff", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
-        "Quarterstaff": Weapon("quarterstaff", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
-        "Spear": Weapon("spear", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
+        "Staff": Weapon("Staff", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
+        "Quarterstaff": Weapon("Quarterstaff", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
+        "Spear": Weapon("Spear", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
     }
     armor = {
         "Hide": Armor("Hide", "armor", "common", "A simple sword", 10, 0),
@@ -672,14 +848,19 @@ def main():
         AdClass("fighter", "d10", {"str": 2, "dex": 0, "con": 2, "int": 0, "wis": 0, "cha": 0}),
     ]
     
+    # Creates the player object
     ad = Adventurer()
 
+    # Prints the title screen
     custom_banner = Figlet(font='rozzo')
     print(custom_banner.renderText('Cloak\n   &\nDagger'))
     print("\n Hello and welcome to the world of DnD!")
     print("-----------------------------------------")
 
+    # The main game loop
     while choice != "4":
+        
+        # Creates the character
         create_character(ad, classes, races)
         ad.set_starting_equip(weapons, armor)
         print("\nHere are your stats!")
@@ -690,24 +871,27 @@ def main():
         set_modifiers(ad)
         print(ad)
         print(ad.modifiers)
+        
+        # The in-game loop
         while choice != "4" and curr_char_alive:
             main_menu()
             choice = input("Please make a selection")
             match int(choice):
-                case 1:
+                case 1:           # checks the character
                     print("\n")
                     print(ad)
                     print("\n")
-                case 2:
+                case 2:           # checks the inventory
                     print("\n")
                     inv_choice = 0
+                    # The inventory loop
                     while inv_choice != "3":
                         inventory_menu()
                         inv_choice = input("please make a selection")
                         match int(inv_choice):
-                            case 1:
+                            case 1:           # lists the inventory
                                 ad.check_inventory()
-                            case 2:
+                            case 2:           # equips an item
                                 done = False
                                 while not done:
                                     print("\n")
@@ -722,8 +906,12 @@ def main():
                                             done = True
                                         else:
                                             print("That item is not in your backpack!")
+                case 3:            # enters the dungeon
+                    
+                    # Creates the dungeon
                     new_dungeon = dungeon.create_dungeon(ad.level, loot, rare_loot, enemies, bosses,
                                                          random.randint(4, 10))
+                    # The dungeon loop
                     while not new_dungeon.is_empty():
                         game_over = reveal_room(new_dungeon.head, ad)
                         if game_over:
