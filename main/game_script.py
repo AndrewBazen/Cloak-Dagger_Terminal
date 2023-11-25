@@ -115,36 +115,37 @@ class Adventurer:
                     hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
-                    dice_roll.attack_roll(hit_roll, self, enemy)
+                    result = dice_roll.attack_roll(hit_roll, self, enemy)
                 elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
                         "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
                     hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["dex"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
-                    dice_roll.attack_roll(hit_roll, self, enemy)
+                    result = dice_roll.attack_roll(hit_roll, self, enemy)
                 else:
                     hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
-                    dice_roll.attack_roll(hit_roll, self, enemy)
+                    result = dice_roll.attack_roll(hit_roll, self, enemy)
             elif not self.has_adv:
                 if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
                     or self.equipped["Weapon"].weapon_type == "heavy":
                     hit_roll = max(dice_roll.roll(1, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
-                    dice_roll.attack_roll(hit_roll, self, enemy)
+                    result = dice_roll.attack_roll(hit_roll, self, enemy)
                 elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
                         "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
                     hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["dex"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
-                    dice_roll.attack_roll(hit_roll, self, enemy)
+                    result = dice_roll.attack_roll(hit_roll, self, enemy)
                 else:
                     hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"You rolled a {hit_roll}!")
-                    dice_roll.attack_roll(hit_roll, self, enemy)
+                    result = dice_roll.attack_roll(hit_roll, self, enemy)
+            return result
 
     def set_starting_equip(self, weapons, armor):
         class_type = self.ad_class
