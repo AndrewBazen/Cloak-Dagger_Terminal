@@ -627,6 +627,32 @@ def main():
         Spell("Acid Splash", 1, "acid", "d6", 1, 1, 2),
         Spell("Viscious Mockery", 1, "psychic", "d4", 1, 1, 1),
     ]
+    enemies = [
+        Enemy("goblin", 1, "common", 12, 7, 0, {"str": 8, "dex": 14, "con": 10, "int": 10, "wis": 8, "cha": 8}),
+        Enemy("orc", 2, "common", 13, 15, 0, {"str": 16, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}),
+        Enemy("kobold", .25, "common", 12, 5, 0, {"str": 7, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}),
+        Enemy("bugbear", 3, "common", 16, 27, 0, {"str": 15, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}),
+        Enemy("hobgoblin", 2, "common", 18, 11, 0, {"str": 13, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}),
+        Enemy("sprite", .25, "common", 15, 2, 0, {"str": 3, "dex": 18, "con": 10, "int": 14, "wis": 13, "cha": 11}),
+        Enemy("giant rat", 1, "common", 12, 7, 0, {"str": 7, "dex": 15, "con": 11, "int": 2, "wis": 10, "cha": 4}),
+        Enemy("giant spider", 1, "common", 14, 11, 0, {"str": 14, "dex": 16, "con": 12, "int": 2, "wis": 11, "cha": 4}),
+        Enemy("giant wolf spider", 1, "common", 13, 11, 0, {"str": 12, "dex": 16, "con": 13, "int": 3, "wis": 12, "cha": 6}),
+        Enemy("dire wolf", 2, "common", 14, 37, 0, {"str": 17, "dex": 15, "con": 15, "int": 3, "wis": 12, "cha": 7}),
+        Enemy("driad", .5, "common", 11, 11, 0, {"str": 10, "dex": 14, "con": 10, "int": 12, "wis": 13, "cha": 14}),
+    ]
+    bosses = [
+        Boss("goblin boss", 5, "common", 17, 21, 0, {"str": 14, "dex": 10, "con": 14, "int": 10, "wis": 8, "cha": 10}),
+        Boss("orc war chief", 4, "common", 16, 45, 0, {"str": 18, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}),
+        Boss("kobold king", 1, "common", 13, 27, 0, {"str": 9, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}),
+        Boss("bugbear chief", 6, "common", 16, 65, 0, {"str": 17, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}),
+        Boss("hobgoblin warlord", 5, "common", 18, 45, 0, {"str": 15, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}),
+        Boss("Manticore", 3, "common", 14, 68, 0, {"str": 17, "dex": 16, "con": 17, "int": 7, "wis": 12, "cha": 8}),
+        Boss("Ogre", 2, "common", 11, 59, 0, {"str": 19, "dex": 8, "con": 16, "int": 5, "wis": 7, "cha": 7}),
+        Boss("Warlock", 3, "common", 11, 59, 0, {"str": 8, "dex": 14, "con": 14, "int": 11, "wis": 12, "cha": 16}),
+        Boss("Beholder", 5, "common", 18, 180, 0, {"str": 10, "dex": 14, "con": 18, "int": 17, "wis": 15, "cha": 17}),
+        Boss("Lich", 5, "common", 17, 135, 0, {"str": 11, "dex": 16, "con": 16, "int": 20, "wis": 14, "cha": 16}),
+        Boss("Illithid", 7, "common", 15, 71, 0, {"str": 11, "dex": 12, "con": 11, "int": 19, "wis": 17, "cha": 17}),
+    ]
     ad = Adventurer()
 
     custom_banner = Figlet(font='rozzo')
