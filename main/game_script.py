@@ -722,9 +722,8 @@ def main():
                                             done = True
                                         else:
                                             print("That item is not in your backpack!")
-                case 3:
-                    new_dungeon = dungeon.create_dungeon(ad.level, loot, rare_loot, puzzle_keys, enemies, bosses,
-                                                         random.randint(4, 10), puzzles)
+                    new_dungeon = dungeon.create_dungeon(ad.level, loot, rare_loot, enemies, bosses,
+                                                         random.randint(4, 10))
                     while not new_dungeon.is_empty():
                         game_over = reveal_room(new_dungeon.head, ad)
                         if game_over:
