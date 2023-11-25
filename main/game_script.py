@@ -3,14 +3,15 @@ import dice_roll
 from pyfiglet import Figlet
 import dungeon
 
+
 class Adventurer:
 
     def __init__(self):
         self.name = ""
-        self.race = ''
+        self.race = Race()
         self.level = 1
         self.exp_to_next_lvl = 100
-        self.ad_class = ''
+        self.ad_class = AdClass()
         self.has_adv = False
         self.num_attacks = 1
         self.max_hp = 15
@@ -266,6 +267,27 @@ class Adventurer:
     def __repr__(self):
         return f"--- {self.name} ---\nRace: {self.race}  Class: {self.ad_class}\nHP: {self.hp}  MP: {self.mp}\n" \
                f"Stats: Str Dex Con Int Wis Cha\n        {self.stats}"
+               
+               
+class AdClass:
+    """
+    class for character classes
+    """
+    
+    def __init__(self, name, hit_dice, modifiers={"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}):
+        self.name = name
+        self.hit_dice = hit_dice
+        self.modifiers = modifiers
+        
+        
+class Race:
+    """
+    class for character races
+    """
+    
+    def __init__(self, name="", modifiers={"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}):
+        self.name = name
+        self.modifiers = modifiers
 
 
 class Enemy:
@@ -347,19 +369,23 @@ def set_modifiers(player):
 
 
 def create_character(ad, classes, races):
-    keep_character = False
-    while not keep_character:
-        ad.name = input("What is your name, Adventurer?")
-        print(f"\nHello {ad.name}, what race are you?\n")
-        print("--- Races ---")
+    while not keep_character:                                                     
+        ad.name = input("What is your name, Adventurer?")                          
+        print(f"\nHello {ad.name}, what race are you?\n")                       
+        print("--- Races ---") 
         for race in races:
-            print(race)
+            print(race.name)
         print("\n")
-        while ad.race == "":
+        
+        # While loop to check if an available race has been chosen
+        while ad.race == "":                                                         
             temp_race = input("")
-            if temp_race in races:
-                ad.race = temp_race
-            else:
+            for race in races:
+                if temp_race == race.name:
+                    ad.race = temp_race
+                else:
+                    continue
+            if ad.race == "":
                 print("That race does not exist! please choose another")
 
         print("\nWhat class are you?\n")
