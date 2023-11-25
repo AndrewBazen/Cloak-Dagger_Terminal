@@ -357,6 +357,17 @@ class Boss(Enemy):
         self.special_attack = special_attack
         
         
+class Spell():
+    
+    def __init__(self, name, level, dmg_type, dmg_dice, dmg_dice_num, mp_cost, num_targets):
+        self.name = name
+        self.level = level
+        self.dmg_type = dmg_type
+        self.dmg_dice = dmg_dice
+        self.dmg_dice_num = dmg_dice_num
+        self.mp_cost = mp_cost
+        self.num_targets = num_targets
+               
 class Item:
 
     def __init__(self, name="Empty", item_type="other", rarity="common", description=""):
