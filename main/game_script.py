@@ -653,6 +653,25 @@ def main():
         Boss("Lich", 5, "common", 17, 135, 0, {"str": 11, "dex": 16, "con": 16, "int": 20, "wis": 14, "cha": 16}),
         Boss("Illithid", 7, "common", 15, 71, 0, {"str": 11, "dex": 12, "con": 11, "int": 19, "wis": 17, "cha": 17}),
     ]
+    races = [
+        Race("elf", {"str": 0, "dex": 2, "con": 0, "int": 0, "wis": 0, "cha": 0}),
+        Race("dwarf", {"str": 0, "dex": 0, "con": 2, "int": 0, "wis": 0, "cha": 0}),
+        Race("teifling", {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 2}),
+        Race("halfling", {"str": 0, "dex": 2, "con": 0, "int": 0, "wis": 0, "cha": 0}),
+        Race("goliath", {"str": 2, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}),
+        Race("human", {"str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1}),
+    ]
+    classes = [
+        AdClass("barbarian", "d12", {"str": 2, "dex": 0, "con": 2, "int": 0, "wis": 0, "cha": 0}),
+        AdClass("rogue", "d8", {"str": 0, "dex": 2, "con": 0, "int": 0, "wis": 0, "cha": 0}),
+        AdClass("ranger", "d10", {"str": 0, "dex": 2, "con": 0, "int": 0, "wis": 0, "cha": 0}),
+        AdClass("paladin", "d10", {"str": 2, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 2}),
+        AdClass("cleric", "d8", {"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 2, "cha": 2}),
+        AdClass("wizard", "d6", {"str": 0, "dex": 0, "con": 0, "int": 2, "wis": 0, "cha": 2}),
+        AdClass("warlock", "d8", {"str": 0, "dex": 0, "con": 0, "int": 2, "wis": 0, "cha": 2}),
+        AdClass("fighter", "d10", {"str": 2, "dex": 0, "con": 2, "int": 0, "wis": 0, "cha": 0}),
+    ]
+    
     ad = Adventurer()
 
     custom_banner = Figlet(font='rozzo')
