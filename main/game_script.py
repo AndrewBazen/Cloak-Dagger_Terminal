@@ -774,30 +774,7 @@ def reveal_room(room, ad):
     Returns:
         Boolean: True if the player dies, False if the player wins
     """
-    room_type = room.val
-    match room_type:
-        case "Fight room":
-            print(f"your find yourself in a dark room with {room.num_enemies} {room.enemies.name}s")
-            game_over = fight(room.num_enemies, room.enemies, ad)
-            if game_over:
-                return game_over
-        case "Loot room":             #TODO: add loot room
-            pass
-        case "Rest room":             #TODO: add rest room
-            pass
-        case "boss room":             #TODO: add boss room
-            pass
-
-
-def get_loot(loot):
-    pass
-
-
-def get_rare_loot(rare_loot):
-    pass
-
-
-def fight(num_enemies, room, player):
+def fight(room, player):
     """ 
     This function runs the fight between the player and the enemies.
 
@@ -809,9 +786,98 @@ def fight(num_enemies, room, player):
     Returns:
         boolean: True if the player dies, False if the player wins
     """
+    room_complete = False
+    while not room_complete:             # while player is alive and there are enemies left
         player.has_attack = True
+        for enemy in room.enemies:
+            print("\n")
+            print(f"{enemy.name}s health: {enemy.hp}")
+        print("\n")
+        print(f"Your health: {player.hp}")
+        print("\n")
+        fight_menu()
+        fight_option = input("What would you like to do?")
+        match int(fight_option):
+            case 1:                        # list inventory
+                player.check_inventory()
+            case 2:                        # use item
+                print("\n")
+                player.check_inventory()
+                use = input("Which item would you like to use?")
+                for item in player.backpack["Consumables"]:
+                    if item.name == use:
+                        player.use_item(item)
+                    else:
+                        print("That item is not in your backpack!")
+            case 3:                         # attack
+                if room.num_enemies > 1:
+                    print("\n")
+                    print("Which enemy would you like to attack?")
+                    for enemy in room.enemies:
+                        print(f"{enemy.name}")
+                    attacked_enemy = input("")
+                    for i in range(0, room.num_enemies-1):
                         if room.enemies[i].name == attacked_enemy and player.has_attack:
+                            player.attack(room.enemies[i])
                             player.has_attack = False
+                            if room.enemies[i].hp <= 0: # checks if the enemy is dead
+                                enemy_name = room.enemies[i].name
+                                room.enemies.remove(room.enemies[i])
+                                room.num_enemies -= 1
+                                print("\n")
+                                print(f"You killed the {enemy_name}!")
+                                print("\n")
+                                if room.num_enemies != 0:
+                                    print("Next enemy's turn!")
+                                    for enemy in room.enemies:
+                                        enemy.attack(player)
+                                        if player.hp <= 0:
+                                            game_over()
+                                    print_enemies_left(room)
+                            else:
+                                for enemy in room.enemies:
+                                    enemy.attack(player)
+                                    if player.hp <= 0:
+                                        game_over()
+                else:
+                    player.attack(room.enemies[0])
+                    player.has_attack = False
+                    if room.enemies[0].hp <= 0: # checks if the enemy is dead
+                        last_enemy = room.enemies[0]
+                        room.enemies.remove(room.enemies[0])
+                        room.num_enemies -= 1
+                        print("\n")
+                        print(f"You killed the {last_enemy.name}!")
+                        print("\n")
+                        print("time to move on!")
+                        player_choice = in_game_menu()
+                        while player_choice != 4 or player_choice != 5:
+                            if player_choice == 1:
+                                player.print_character_sheet()
+                            elif player_choice == 2:
+                                player.check_inventory()
+                            elif player_choice == 3:
+                                print("\n")
+                                player.check_inventory()
+                                use = input("Which item would you like to use?")
+                                for item in player.backpack["Consumables"]:
+                                    if item.name == use:
+                                        player.use_item(item)
+                                    else:
+                                        print("That item is not in your backpack!")
+                            elif player_choice == 4:
+                                room_complete = True
+                            elif player_choice == 5:
+                                game_over()
+                            else:
+                                print("That is not an option!")
+                                player_choice = in_game_menu()
+                    else:
+                        room.enemies[0].attack(player)
+                        if player.hp <= 0:
+                            game_over()
+                            
+                            
 def game_over():
     """
     This function ends the game.
