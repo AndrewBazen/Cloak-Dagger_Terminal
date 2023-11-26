@@ -2,7 +2,6 @@ import random
 import dice_roll
 from pyfiglet import Figlet
 import dungeon
-import os
 import shutil
 
 
@@ -219,7 +218,7 @@ class Adventurer:
                 self.equipped["Armor"] = armor["Leather"]
             case "paladin":      # checks if the player is a paladin
                 self.equipped["Weapon"] = weapons["Shortsword"]
-                self.equipped["Armor"] = armor["Half-plate"]
+                self.equipped["Armor"] = armor["Half-Plate"]
             case "cleric":       # checks if the player is a cleric
                 self.equipped["Weapon"] = weapons["Mace"]
                 self.equipped["Armor"] = armor["Chainmail"]
@@ -367,7 +366,7 @@ class Adventurer:
         print("\n")
         print("Character Name: {}     Race: {}     Class: Level {} {} ".format(self.name, self.race.name, self.level
                                                                         , self.ad_class.name))
-        print("HP: {}/{}     MP: {}/{}".format(self.hp, self.max_hp, self.mp, self.max_mp))
+        print("HP: {}/{}     MP: {}/{}     AC: {}".format(self.hp, self.max_hp, self.mp, self.max_mp, self.ac))
         print("Experience:")
         self.print_experience_bar(self.total_exp, self.exp_to_next_lvl)
         print("\n")
@@ -737,7 +736,7 @@ def in_game_menu():
     print("****      Game Menu      ****")
     print("1. Check Character")
     print("2. Check Inventory")
-    print("3  Pick up item")
+    print("3  Use item")
     print("4. Next Room")
     print("5. Quit game")
 
