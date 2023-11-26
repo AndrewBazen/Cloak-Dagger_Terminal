@@ -2,6 +2,8 @@ import random
 import dice_roll
 from pyfiglet import Figlet
 import dungeon
+import os
+import shutil
 
 
 class Adventurer:
@@ -126,6 +128,23 @@ class Adventurer:
         self.hp = self.max_hp
         self.mp = self.max_mp
         self.num_attacks += 1
+        
+    def print_experience_bar(self, current_exp, next_level_exp):
+        # Calculate the ratio of current experience to the experience needed
+        ratio = current_exp / next_level_exp
+
+        # Determine the width of the terminal
+        terminal_width = shutil.get_terminal_size((80, 20)).columns/4
+
+        # Calculate the number of characters to represent the experience bar
+        bar_length = int(ratio * terminal_width)
+
+        # Create the experience bar string
+        exp_bar = '|' + '#' * bar_length + '-' * int(terminal_width - bar_length) + '|' + \
+                    f' {current_exp}/{next_level_exp}'
+                    
+        # Print the experience bar
+        print(exp_bar)
 
     def attack(self, enemy):
         """
@@ -186,7 +205,7 @@ class Adventurer:
             weapons (Dictionary): the weapons dictionary
             armor (Dictionary): the armor dictionary
         """
-        class_type = self.ad_class
+        class_type = self.ad_class.name
         match class_type:
             case "barbarian":    # checks if the player is a barbarian
                 self.equipped["Weapon"] = weapons["Handaxe"]
@@ -199,7 +218,7 @@ class Adventurer:
                 self.equipped["Armor"] = armor["Leather"]
             case "paladin":      # checks if the player is a paladin
                 self.equipped["Weapon"] = weapons["Shortsword"]
-                self.equipped["Armor"] = armor["half-plate"]
+                self.equipped["Armor"] = armor["Half-plate"]
             case "cleric":       # checks if the player is a cleric
                 self.equipped["Weapon"] = weapons["Mace"]
                 self.equipped["Armor"] = armor["Chainmail"]
@@ -208,7 +227,7 @@ class Adventurer:
             case "warlock":      # checks if the player is a warlock
                 self.equipped["Weapon"] = weapons["Quarterstaff"]
             case "fighter":      # checks if the player is a fighter
-                self.equipped["Weapon"] = weapons["spear"]
+                self.equipped["Weapon"] = weapons["Spear"]
                 self.equipped["Armor"] = armor["Leather"]
 
     def equip_weapon(self, item):
@@ -327,10 +346,40 @@ class Adventurer:
         """
         prints the inventory of the player
         """
+        print("\n     ******  Inventory  ******")
+        print("\n")
+        print("Equipped:")
+        print(f"\n     Weapon: {self.equipped['Weapon'].name}    Armor: {self.equipped['Armor'].name}")
+        print("\n")
+        print("Backpack:")
         for item in self.backpack:
-            print("- {item}".format(item=item))
+            print(f"\n  - {item}\n")
             for i in self.backpack[item]:
                 print(f"    - {i.name}")
+        print("\n")
+                
+    def print_character_sheet(self):
+        """
+        prints the character sheet of the player
+        """
+        print("\n                          **** Character Sheet ****")
+        print("\n")
+        print("Character Name: {}     Race: {}     Class: Level {} {} ".format(self.name, self.race.name, self.level
+                                                                        , self.ad_class.name))
+        print("HP: {}/{}     MP: {}/{}".format(self.hp, self.max_hp, self.mp, self.max_mp))
+        print("Experience:")
+        self.print_experience_bar(self.total_exp, self.exp_to_next_lvl)
+        print("\n")
+        print("    Strength      Dexterity   Constitution  Intelligence     Wisdom       Charisma    ")     
+        print("     ------        ------        ------        ------        ------        ------")
+        print("     | {:2} |        | {:2} |        | {:2} |        | {:2} |        | {:2} |        | {:2} |".format(self.stats["str"]
+                            , self.stats["dex"], self.stats["con"], self.stats["int"], self.stats["wis"], self.stats["cha"]))
+        print("     ------        ------        ------        ------        ------        ------")
+        print("      ({:2})          ({:2})          ({:2})          ({:2})          ({:2})          ({:2})".format(self.modifiers["str"]
+                            , self.modifiers["dex"], self.modifiers["con"], self.modifiers["int"], self.modifiers["wis"], self.modifiers["cha"]))
+        print("\n")
+     
+
 
     def __repr__(self):
         return f"--- {self.name} ---\nRace: {self.race}  Class: {self.ad_class}\nHP: {self.hp}  MP: {self.mp}\n" \
@@ -517,7 +566,29 @@ class Consumable(Item):
         
 
 
-def set_modifiers(player):
+def set_ad_modifiers(ad):
+    """
+    generates the modifiers for the player based on their stats
+
+    Args:
+        target (Adventurer/Enemy): player or enemy object
+    """
+    stats = ad.stats.items()
+    for stat in stats:
+        if 6 <= stat[1] <= 7:
+            ad.modifiers[stat[0]] = -2
+        elif 8 <= stat[1] <= 9:
+            ad.modifiers[stat[0]] = -1
+        elif 12 <= stat[1] <= 13:
+            ad.modifiers[stat[0]] = 1
+        elif 14 <= stat[1] <= 15:
+            ad.modifiers[stat[0]] = 2
+        elif 16 <= stat[1] <= 17:
+            ad.modifiers[stat[0]] = 3
+        elif 18 <= stat[1]:
+            ad.modifiers[stat[0]] = 4
+            
+
     """
     generates the modifiers for the player based on their stats
 
@@ -556,7 +627,8 @@ def create_character(ad, classes, races):
     
     # while loop to keep the character                  
     while not keep_character:                                                     
-        ad.name = input("What is your name, Adventurer?")                          
+        print("\nWhat is your name Adventurer?\n")
+        ad.name = input("")                       
         print(f"\nHello {ad.name}, what race are you?\n")                       
         print("--- Races ---") 
         for race in races:
@@ -564,11 +636,11 @@ def create_character(ad, classes, races):
         print("\n")
         
         # While loop to check if an available race has been chosen
-        while ad.race == "":                                                         
+        while ad.race.name == "":                                                         
             temp_race = input("")
             for race in races:
                 if temp_race == race.name:
-                    ad.race = temp_race
+                    ad.race = race
                 else:
                     continue
             if ad.race == "":
@@ -580,19 +652,22 @@ def create_character(ad, classes, races):
         print("\n")
         
         # While loop to check if an available class has been chosen
-        while ad.ad_class == "":
+        while ad.ad_class.name == "":
             temp_class = input("")
-            if temp_class in classes:
-                ad.ad_class = temp_class
-            else:
+            for av_class in classes:
+                if temp_class == av_class.name:
+                    ad.ad_class = av_class
+                else:
+                    continue
+            if ad.ad_class == "":
                 print("That class does not exist! please choose another")
                 
         # Prints the character and asks if the user wants to keep it
-        print("Here is your adventurer!\n")
+        print("\nHere is your adventurer!\n")
         print(f"--- {ad.name} ---")
         print(f"Race: {ad.race}")
         print(f"Class: {ad.ad_class}")
-        print("would you like to keep this character and roll stats? (y/n)")
+        print("\nwould you like to keep this character and roll stats? (y/n)")
 
         # While loop to check if the user wants to keep the character
         correct_input = False
@@ -757,7 +832,7 @@ def main():
         "Greataxe": Weapon("Greataxe", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
         "Mace": Weapon("Mace", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
         "Warhammer": Weapon("Warhammer", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
-        "Staff": Weapon("Staff", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
+        "BattleStaff": Weapon("Staff", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
         "Quarterstaff": Weapon("Quarterstaff", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
         "Spear": Weapon("Spear", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
     }
@@ -803,32 +878,32 @@ def main():
         Spell("Acid Splash", 1, "acid", "d6", 1, 1, 2),
         Spell("Viscious Mockery", 1, "psychic", "d4", 1, 1, 1),
     ]
-    enemies = [
-        Enemy("goblin", 1, "common", 12, 7, 0, {"str": 8, "dex": 14, "con": 10, "int": 10, "wis": 8, "cha": 8}),
-        Enemy("orc", 2, "common", 13, 15, 0, {"str": 16, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}),
-        Enemy("kobold", .25, "common", 12, 5, 0, {"str": 7, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}),
-        Enemy("bugbear", 3, "common", 16, 27, 0, {"str": 15, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}),
-        Enemy("hobgoblin", 2, "common", 18, 11, 0, {"str": 13, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}),
-        Enemy("sprite", .25, "common", 15, 2, 0, {"str": 3, "dex": 18, "con": 10, "int": 14, "wis": 13, "cha": 11}),
-        Enemy("giant rat", 1, "common", 12, 7, 0, {"str": 7, "dex": 15, "con": 11, "int": 2, "wis": 10, "cha": 4}),
-        Enemy("giant spider", 1, "common", 14, 11, 0, {"str": 14, "dex": 16, "con": 12, "int": 2, "wis": 11, "cha": 4}),
-        Enemy("giant wolf spider", 1, "common", 13, 11, 0, {"str": 12, "dex": 16, "con": 13, "int": 3, "wis": 12, "cha": 6}),
-        Enemy("dire wolf", 2, "common", 14, 37, 0, {"str": 17, "dex": 15, "con": 15, "int": 3, "wis": 12, "cha": 7}),
-        Enemy("driad", .5, "common", 11, 11, 0, {"str": 10, "dex": 14, "con": 10, "int": 12, "wis": 13, "cha": 14}),
-    ]
-    bosses = [
-        Boss("goblin boss", 5, "common", 17, 21, 0, {"str": 14, "dex": 10, "con": 14, "int": 10, "wis": 8, "cha": 10}),
-        Boss("orc war chief", 4, "common", 16, 45, 0, {"str": 18, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}),
-        Boss("kobold king", 1, "common", 13, 27, 0, {"str": 9, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}),
-        Boss("bugbear chief", 6, "common", 16, 65, 0, {"str": 17, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}),
-        Boss("hobgoblin warlord", 5, "common", 18, 45, 0, {"str": 15, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}),
-        Boss("Manticore", 3, "common", 14, 68, 0, {"str": 17, "dex": 16, "con": 17, "int": 7, "wis": 12, "cha": 8}),
-        Boss("Ogre", 2, "common", 11, 59, 0, {"str": 19, "dex": 8, "con": 16, "int": 5, "wis": 7, "cha": 7}),
-        Boss("Warlock", 3, "common", 11, 59, 0, {"str": 8, "dex": 14, "con": 14, "int": 11, "wis": 12, "cha": 16}),
-        Boss("Beholder", 5, "common", 18, 180, 0, {"str": 10, "dex": 14, "con": 18, "int": 17, "wis": 15, "cha": 17}),
-        Boss("Lich", 5, "common", 17, 135, 0, {"str": 11, "dex": 16, "con": 16, "int": 20, "wis": 14, "cha": 16}),
-        Boss("Illithid", 7, "common", 15, 71, 0, {"str": 11, "dex": 12, "con": 11, "int": 19, "wis": 17, "cha": 17}),
-    ]
+    enemies = {
+        "goblin": Enemy("goblin", 1, "common", 12, 7, 0, {"str": 8, "dex": 14, "con": 10, "int": 10, "wis": 8, "cha": 8}), 
+        "orc": Enemy("orc", 2, "common", 13, 15, 0, {"str": 16, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}), 
+        "kobold": Enemy("kobold", .25, "common", 12, 5, 0, {"str": 7, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}), 
+        "bugbear": Enemy("bugbear", 3, "common", 16, 27, 0, {"str": 15, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}), 
+        "hobgoblin": Enemy("hobgoblin", 2, "common", 18, 11, 0, {"str": 13, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}), 
+        "sprite": Enemy("sprite", .25, "common", 15, 2, 0, {"str": 3, "dex": 18, "con": 10, "int": 14, "wis": 13, "cha": 11}),
+        "giant rat": Enemy("giant rat", 1, "common", 12, 7, 0, {"str": 7, "dex": 15, "con": 11, "int": 2, "wis": 10, "cha": 4}),
+        "giant spider": Enemy("giant spider", 1, "common", 14, 11, 0, {"str": 14, "dex": 16, "con": 12, "int": 2, "wis": 11, "cha": 4}), 
+        "giant wolf spider": Enemy("giant wolf spider", 1, "common", 13, 11, 0, {"str": 12, "dex": 16, "con": 13, "int": 3, "wis": 12, "cha": 6}), 
+        "dire wolf": Enemy("dire wolf", 2, "common", 14, 37, 0, {"str": 17, "dex": 15, "con": 15, "int": 3, "wis": 12, "cha": 7}), 
+        "driad": Enemy("driad", .5, "common", 11, 11, 0, {"str": 10, "dex": 14, "con": 10, "int": 12, "wis": 13, "cha": 14}),
+    }
+    bosses = {
+        "goblin boss": Boss("goblin boss", 5, "common", 17, 21, 0, {"str": 14, "dex": 10, "con": 14, "int": 10, "wis": 8, "cha": 10}, spells[0]),
+        "orc war chief": Boss("orc war chief", 4, "common", 16, 45, 0, {"str": 18, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}, spells[1]),
+        "kobold king": Boss("kobold king", 1, "common", 13, 27, 0, {"str": 9, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}, spells[2]),
+        "bugbear chief": Boss("bugbear chief", 6, "common", 16, 65, 0, {"str": 17, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}, spells[3]),
+        "hobgoblin warlord": Boss("hobgoblin warlord", 5, "common", 18, 45, 0, {"str": 15, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}, spells[4]),
+        "manticore": Boss("Manticore", 3, "common", 14, 68, 0, {"str": 17, "dex": 16, "con": 17, "int": 7, "wis": 12, "cha": 8}, spells[5]),
+        "ogre": Boss("Ogre", 2, "common", 11, 59, 0, {"str": 19, "dex": 8, "con": 16, "int": 5, "wis": 7, "cha": 7}, spells[6]),
+        "warlock": Boss("Warlock", 3, "common", 11, 59, 0, {"str": 8, "dex": 14, "con": 14, "int": 11, "wis": 12, "cha": 16}, spells[7]),
+        "beholder": Boss("Beholder", 5, "common", 18, 180, 0, {"str": 10, "dex": 14, "con": 18, "int": 17, "wis": 15, "cha": 17}, spells[8]),
+        "lich": Boss("Lich", 5, "common", 17, 135, 0, {"str": 11, "dex": 16, "con": 16, "int": 20, "wis": 14, "cha": 16}, spells[8]),
+        "illithid": Boss("Illithid", 7, "common", 15, 71, 0, {"str": 11, "dex": 12, "con": 11, "int": 19, "wis": 17, "cha": 17}, spells[8]),
+    }
     races = [
         Race("elf", {"str": 0, "dex": 2, "con": 0, "int": 0, "wis": 0, "cha": 0}),
         Race("dwarf", {"str": 0, "dex": 0, "con": 2, "int": 0, "wis": 0, "cha": 0}),
@@ -868,14 +943,16 @@ def main():
         print(ad_stats)
         print("\n")
         ad.set_player_stats(ad_stats)
-        set_modifiers(ad)
-        print(ad)
-        print(ad.modifiers)
+        print("\n")
+        print("-----------------------------------------")
+        print("\n")
+        print("Now that you have your character, you can enter the dungeon!\n")
         
         # The in-game loop
         while choice != "4" and curr_char_alive:
             main_menu()
-            choice = input("Please make a selection")
+            print("\n")
+            choice = input("Please make a selection\n")
             match int(choice):
                 case 1:           # checks the character
                     print("\n")
@@ -887,7 +964,7 @@ def main():
                     # The inventory loop
                     while inv_choice != "3":
                         inventory_menu()
-                        inv_choice = input("please make a selection")
+                        inv_choice = input("\nplease make a selection\n")
                         match int(inv_choice):
                             case 1:           # lists the inventory
                                 ad.check_inventory()
@@ -910,7 +987,7 @@ def main():
                     
                     # Creates the dungeon
                     new_dungeon = dungeon.create_dungeon(ad.level, loot, rare_loot, enemies, bosses,
-                                                         random.randint(4, 10))
+                                                         1)
                     # The dungeon loop
                     while not new_dungeon.is_empty():
                         game_over = reveal_room(new_dungeon.head, ad)
