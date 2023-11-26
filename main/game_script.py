@@ -493,9 +493,30 @@ class Enemy:
         self.hp = self.max_hp
         self.mp = self.max_mp
 
+    def set_starting_equip(self, weapon, armor):
+        self.equipped["Weapon"] = weapon
+        self.equipped["Armor"] = armor
+
+    def set_stats(self):
+        info = get_monster_info(self)
+        self.ch_rating = info['challenge_rating']
+        self.ac = info['armor_class'] + self.equipped["Armor"].bonus
+        self.hp = info['hit_points']
+        self.stats["str"] = info['strength']
+        self.stats["dex"] = info['dexterity']
+        self.stats["con"] = info['constitution']
+        self.stats["int"] = info['intelligence']
+        self.stats["wis"] = info['wisdom']
+        self.stats["cha"] = info['charisma']
+        if "spellcasting" in info:
+            self.mp = self.int * self.ch_rating
+        else:
+            self.mp = 0
+
     def __repr__(self):
         return f"--- {self.name} ---\nChallenge Rating: {self.ch_rating}\nArmor Class: {self.ac}\nHP: {self.hp}  " \
                f"MP: {self.mp}"
+
                
 class Boss(Enemy):
     """
@@ -531,16 +552,27 @@ class Spell():
         return f"--- {self.name} ---\nLevel: {self.level}\nDamage Type: {self.dmg_type}\nDamage: {self.dmg_dice_num}" \
                f"{self.dmg_dice}\nMP Cost: {self.mp_cost}\nNumber of Targets: {self.num_targets}"
                
+        
 class Item:
     """
     the parent class for all items
     """
 
-    def __init__(self, name="Empty", item_type="other", rarity="common", description=""):
+    def __init__(self, name="Empty", effect="None"):
         self.name = name
-        self.item_type = ""
         self.rarity = ""
+        self.bonus = 0
+        self.dmg_dice = ""
+        self.th_dmg_dice = ""
+        self.dmg_dice_num = ""
+        self.th_dmg_dice_num = ""
+        self.effect = effect
+        self.effect_dice = ""
+        self.weapon_type = ""
+        self.weapon_property = ""
+        self.item_type = ""
         self.description = ""
+
 
     def __repr__(self):
         return f"--- {self.name} ---\nType: {self.item_type}\nRarity: {self.rarity}\nDescription: {self.description}"
@@ -597,6 +629,7 @@ class Consumable(Item):
         
     def __repr__(self):
         return super().__repr__() + f"\nEffect: {self.effect}\nEffect Dice: {self.effect_dice}"
+      
 
 def set_ad_modifiers(ad):
     """
@@ -643,6 +676,38 @@ def set_modifiers(targets):
                 target.modifiers[stat[0]] = 3
             elif 18 <= stat[1]:
                 target.modifiers[stat[0]] = 4
+
+
+def get_monster_info(monster):
+    name = monster.name.lower()
+    name = name.replace(' ', '-')
+    url = f"https://www.dnd5eapi.co/api/monsters/{name}"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = soup.text.strip("\"")
+    soup = soup.strip("'")
+    info_dict = literal_eval(soup)
+    return info_dict
+
+
+def get_item_info(item):
+    name = item.name
+    name = name.replace(' ', '-')
+    name = name.lower()
+    if item.item_type == "consumable":
+        url = f"https://www.dnd5eapi.co/api/magic-items/{name}"
+    elif item.item_type == "weapon" or item.item_type == "armor":
+        url = f"https://www.dnd5eapi.co/api/equipment/{name}"
+    elif item.item_type == "magic_weapon" or item.item_type == "magic_armor":
+        url = f"https://www.dnd5eapi.co/api/magic-items/{name}"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = soup.text.strip("\"")
+    soup = soup.strip("'")
+    soup = soup.replace("true", "True")
+    soup = soup.replace("false", "False")
+    item_dict = literal_eval(soup)
+    return item_dict
 
 
 def create_character(ad, classes, races):
@@ -766,6 +831,7 @@ def reveal_room(dungeon, ad):
     """
     Prints the room description and the enemies in the room.
 
+
     Args:
         room (RoomNode): the room object
         ad (Adventurer): the player object
@@ -810,6 +876,7 @@ def reveal_room(dungeon, ad):
     print("You win!")
     #TODO: add win screen
     
+
 
 def print_enemies_left(room):
     """
@@ -1151,6 +1218,7 @@ def main():
                                         ad.equip_weapon(item)
                                         done = True
                                     for item in ad.backpack["Armor"]:
+
                                         if item.name != equip:
                                             continue
                                         ad.equip_armor(item)
