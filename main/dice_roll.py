@@ -73,54 +73,62 @@ def roll_stats():
 
 
 def attack_roll(hit_roll, player, enemy):
+    hit = False
     if hit_roll == 20:
+        hit = True
         print("That's a CRITICAL HIT!!")
-        dmg = roll(int(player.equipped["Weapon"].dmg_dice_num), player.equipped["Weapon"].dmg_dice)
+        dmg = roll(player.equipped["Weapon"].dmg_dice_num, player.equipped["Weapon"].damage_dice)
         damage = dmg[1] * 2
         if enemy.hp > damage:
             enemy.hp -= damage
             print("\n")
             print(f"You dealt {damage} critical damage!")
         else:
+            enemy.hp -= damage
             print("\n")
             print(f"You decimated the {enemy.name}!")
-    elif hit_roll >= enemy.ac:
-        dmg = roll(int(player.equipped["Weapon"].dmg_dice_num), player.equipped["Weapon"].dmg_dice)
+    elif hit_roll >= enemy.ac and hit_roll != 20:
+        hit = True
+        dmg = roll(player.equipped["Weapon"].dmg_dice_num, player.equipped["Weapon"].damage_dice)
         damage = dmg[1]
         if enemy.hp > damage:
             enemy.hp -= damage
             print("\n")
             print(f"You dealt {damage} damage!")
         else:
+            enemy.hp -= damage
             print("\n")
             print(f"You defeated the {enemy.name}!")
     else:
         print("\n")
         print("Your attack missed!")
+    return hit
 
 
 def enemy_attack_roll(hit_roll, enemy, player):
     result = False
     if hit_roll == 20:
         print("That's a CRITICAL HIT!!")
-        dmg = roll(int(enemy.equipped["Weapon"].dmg_dice_num), enemy.equipped["Weapon"].dmg_dice)
+        dmg = roll(enemy.equipped["Weapon"].dmg_dice_num, enemy.equipped["Weapon"].damage_dice)
         damage = dmg[1] * 2
         if player.hp > damage:
             player.hp -= damage
             print("\n")
             print(f"The {enemy.name} dealt {damage} critical damage!")
         else:
+            player.hp -= damage
             print("\n")
             print(f"You were decimated by the {enemy.name}!")
             result = True
-    elif hit_roll >= player.ac:
-        dmg = roll(int(enemy.equipped["Weapon"].dmg_dice_num), enemy.equipped["Weapon"].dmg_dice)
+    elif hit_roll >= player.ac and hit_roll != 20:
+        dmg = roll(enemy.equipped["Weapon"].dmg_dice_num, enemy.equipped["Weapon"].damage_dice)
         damage = dmg[1]
         if player.hp > damage:
             player.hp -= damage
             print("\n")
             print(f"The {enemy.name} dealt {damage} damage!")
         else:
+            player.hp -= damage
             print("\n")
             print(f"You were defeated by the {enemy.name}!")
             result = True
