@@ -608,26 +608,28 @@ def set_ad_modifiers(ad):
             ad.modifiers[stat[0]] = 4
             
 
+def set_modifiers(targets):
     """
     generates the modifiers for the player based on their stats
 
     Args:
-        player (Adventurer): the player object
+        target (Adventurer/Enemy): player or enemy object
     """
-    stats = player.stats.items()
-    for stat in stats:
-        if 6 <= stat[1] <= 7:
-            player.modifiers[stat[0]] = -2
-        elif 8 <= stat[1] <= 9:
-            player.modifiers[stat[0]] = -1
-        elif 12 <= stat[1] <= 13:
-            player.modifiers[stat[0]] = 1
-        elif 14 <= stat[1] <= 15:
-            player.modifiers[stat[0]] = 2
-        elif 16 <= stat[1] <= 17:
-            player.modifiers[stat[0]] = 3
-        elif 18 <= stat[1]:
-            player.modifiers[stat[0]] = 4
+    for target in targets:
+        stats = target.stats.items()
+        for stat in stats:
+            if 6 <= stat[1] <= 7:
+                target.modifiers[stat[0]] = -2
+            elif 8 <= stat[1] <= 9:
+                target.modifiers[stat[0]] = -1
+            elif 12 <= stat[1] <= 13:
+                target.modifiers[stat[0]] = 1
+            elif 14 <= stat[1] <= 15:
+                target.modifiers[stat[0]] = 2
+            elif 16 <= stat[1] <= 17:
+                target.modifiers[stat[0]] = 3
+            elif 18 <= stat[1]:
+                target.modifiers[stat[0]] = 4
 
 
 def create_character(ad, classes, races):
@@ -942,6 +944,10 @@ def main():
         AdClass("fighter", "d10", {"str": 2, "dex": 0, "con": 2, "int": 0, "wis": 0, "cha": 0}),
     ]
     
+    # Sets the modifiers for all of the enemies and bosses
+    set_modifiers(enemies.values())
+    set_modifiers(bosses.values())
+    
     # Creates the player object
     ad = Adventurer()
 
@@ -962,6 +968,10 @@ def main():
         print(ad_stats)
         print("\n")
         ad.set_player_stats(ad_stats)
+        set_ad_modifiers(ad)
+        ad.print_character_sheet()
+        print(f"Saving Throws: Str - {ad.modifiers['str']} Dex - {ad.modifiers['dex']} Con - {ad.modifiers['con']}")
+        print(f"               Int - {ad.modifiers['int']} Wis - {ad.modifiers['wis']} Cha - {ad.modifiers['cha']}")
         print("\n")
         print("-----------------------------------------")
         print("\n")
