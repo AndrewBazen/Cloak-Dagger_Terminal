@@ -4,7 +4,7 @@ import dice_roll
 
 class RoomNode:
 
-    def __init__(self, val, num_enemies=1, enemies=None, loot=None, puzzles=None):
+    def __init__(self, val, num_enemies=1, enemies=[], loot=None, puzzles=None):
         self.val = val
         self.next = None
         self.num_enemies = num_enemies
@@ -31,8 +31,8 @@ class LinkedList:
         self.head = head
         self.count = 0
 
-    def insert(self, val, num_enemies, enemies, loot, puzzles):
-        new_node = RoomNode(val, num_enemies, enemies, loot, puzzles)
+    def insert(self, val, num_enemies, enemies, loot):
+        new_node = RoomNode(val, num_enemies, enemies, loot)
         new_node.set_next(self.head)
         self.head = new_node
         self.count += 1
