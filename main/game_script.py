@@ -416,12 +416,13 @@ class Enemy:
     class for enemy objects
     """
 
-    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats):
+    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats, equipped):
         self.name = name
         self.ch_rating = ch_rating
         self.base_experience = ch_rating * 100
         self.drop_class = drop_class
-        self.equipped = {"Weapon": Weapon(), "Armor": Armor()}
+        self.equipped = equipped
+        self.has_adv = False
         self.ac = ac
         self.hp = hp
         self.mp = mp
@@ -492,8 +493,8 @@ class Boss(Enemy):
         Enemy (Class): the parent class
     """
     
-    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats, special_attack):
-        super().__init__(name, ch_rating, drop_class, ac, hp, mp, stats)
+    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats, equipped, special_attack):
+        super().__init__(name, ch_rating, drop_class, ac, hp, mp, stats, equipped)
         self.special_attack = special_attack
         
     def __repr__(self):
@@ -856,6 +857,14 @@ def main():
         "BattleStaff": Weapon("Staff", "weapon", "rare", "A simple sword", "two-handed", 1, "d10", 0),
         "Quarterstaff": Weapon("Quarterstaff", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
         "Spear": Weapon("Spear", "weapon", "uncommon", "A simple sword", "versatile", 1, "d8", 0),
+        "Bite": Weapon("Bite", "weapon", "common", "A simple sword", "simple", 1, "d4", 0),
+        "Claws": Weapon("Claw", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
+        "Fangs": Weapon("Fangs", "weapon", "common", "A simple sword", "simple", 1, "d6", 0),
+        "Tail": Weapon("Tail", "weapon", "common", "A simple sword", "simple", 2, "d6", 0),
+        "Eye Rays": Weapon("Eye Rays", "weapon", "common", "A simple sword", "simple", 3, "d6", 0),
+        "Greatclub": Weapon("Greatclub", "weapon", "rare", "A simple sword", "simple", 2, "d8", 0),
+        "Tentacles": Weapon("Tenacles", "weapon", "common", "A simple sword", "simple", 2, "d8", 0),
+        "Staff of Chaos": Weapon("Staff of Chaos", "magic_weapon", "legendary", "A staff that is powered by chaos", "two-handed", 1, "d10", dice_roll.roll(1, "d6")[1]),
     }
     armor = {
         "Hide": Armor("Hide", "armor", "common", "A simple sword", 10, 0),
@@ -865,6 +874,8 @@ def main():
         "Plate": Armor("Plate", "armor", "rare", "A simple sword", 15, 0),
         "Half-Plate": Armor("Half-Plate", "armor", "uncommon", "A simple sword", 14, 0),
         "Scale": Armor("Scale", "armor", "common", "A simple sword", 12, 0),
+        "Ancient Armor": Armor("Ancient Armor", "magic_armor", "legendary", "Armor that is blessed by the gods", 15, dice_roll.roll(1, "d6")[1]),
+        "Astral Armor": Armor("Astral Armor", "magic_armor", "legendary", "Armor that is blessed by the gods", 14, dice_roll.roll(1, "d6")[1])
     }
     loot = [
         Item("Gold", "other", "uncommon", "A small pile of gold"),
@@ -883,10 +894,12 @@ def main():
     ]
     rare_loot = [
         Weapon("Sword of the Sun", "magic_weapon", "legendary", "A sword that glows with the power of the sun", "versatile", 1, "d8", dice_roll.roll(1, "d6")[1]),
+        Weapon("Staff of Chaos", "magic_weapon", "legendary", "A staff that is powered by chaos", "two-handed", 1, "d10", dice_roll.roll(1, "d6")[1]),
         Weapon("Hammer of Vodr", "magic_weapon", "legendary", "A hammer powered by divine energy", "two-handed", 1, "d10", dice_roll.roll(1, "d6")[1]),
         Armor("Armor of the Gods", "magic_armor", "legendary", "Armor that is blessed by the gods", 16, dice_roll.roll(1, "d6")[1]),
         Consumable("Potion of the Gods", "consumable", "legendary", "A potion that increases all stats by 1d6", "inc_all", ("d6", 1)),
         Armor("Ancient Armor", "magic_armor", "legendary", "Armor that is blessed by the gods", 15, dice_roll.roll(1, "d6")[1]),
+        Armor("Astral Armor", "magic_armor", "legendary", "Armor that is blessed by the gods", 14, dice_roll.roll(1, "d6")[1]),
     ]
     spells = [
         Spell("Fireball", 3, "fire", "d6", 8, 5, 5),
@@ -900,30 +913,30 @@ def main():
         Spell("Viscious Mockery", 1, "psychic", "d4", 1, 1, 1),
     ]
     enemies = {
-        "goblin": Enemy("goblin", 1, "common", 12, 7, 0, {"str": 8, "dex": 14, "con": 10, "int": 10, "wis": 8, "cha": 8}), 
-        "orc": Enemy("orc", 2, "common", 13, 15, 0, {"str": 16, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}), 
-        "kobold": Enemy("kobold", .25, "common", 12, 5, 0, {"str": 7, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}), 
-        "bugbear": Enemy("bugbear", 3, "common", 16, 27, 0, {"str": 15, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}), 
-        "hobgoblin": Enemy("hobgoblin", 2, "common", 18, 11, 0, {"str": 13, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}), 
-        "sprite": Enemy("sprite", .25, "common", 15, 2, 0, {"str": 3, "dex": 18, "con": 10, "int": 14, "wis": 13, "cha": 11}),
-        "giant rat": Enemy("giant rat", 1, "common", 12, 7, 0, {"str": 7, "dex": 15, "con": 11, "int": 2, "wis": 10, "cha": 4}),
-        "giant spider": Enemy("giant spider", 1, "common", 14, 11, 0, {"str": 14, "dex": 16, "con": 12, "int": 2, "wis": 11, "cha": 4}), 
-        "giant wolf spider": Enemy("giant wolf spider", 1, "common", 13, 11, 0, {"str": 12, "dex": 16, "con": 13, "int": 3, "wis": 12, "cha": 6}), 
-        "dire wolf": Enemy("dire wolf", 2, "common", 14, 37, 0, {"str": 17, "dex": 15, "con": 15, "int": 3, "wis": 12, "cha": 7}), 
-        "driad": Enemy("driad", .5, "common", 11, 11, 0, {"str": 10, "dex": 14, "con": 10, "int": 12, "wis": 13, "cha": 14}),
+        "goblin": Enemy("goblin", 1, "common", 12, 7, 0, {"str": 8, "dex": 14, "con": 10, "int": 10, "wis": 8, "cha": 8}, {"Weapon": weapons["Shortsword"], "Armor": armor["Hide"]}),
+        "orc": Enemy("orc", 2, "common", 13, 15, 0, {"str": 16, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}, {"Weapon": weapons["Mace"], "Armor": armor["Hide"]}),
+        "kobold": Enemy("kobold", .25, "common", 12, 5, 0, {"str": 7, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}, {"Weapon": weapons["Dagger"], "Armor": armor["Hide"]}),
+        "bugbear": Enemy("bugbear", 3, "rare", 16, 27, 0, {"str": 15, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}, {"Weapon": weapons["Battleaxe"], "Armor": armor["Hide"]}),
+        "hobgoblin": Enemy("hobgoblin", 2, "rare", 18, 11, 0, {"str": 13, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}, {"Weapon": weapons["Longsword"], "Armor": armor["Chainmail"]}),
+        "sprite": Enemy("sprite", .25, "common", 15, 2, 0, {"str": 3, "dex": 18, "con": 10, "int": 14, "wis": 13, "cha": 11}, {"Weapon": weapons["Dagger"], "Armor": armor["Leather"]}),
+        "giant rat": Enemy("giant rat", 1, "common", 12, 7, 0, {"str": 7, "dex": 15, "con": 11, "int": 2, "wis": 10, "cha": 4}, {"Weapon": weapons["Bite"], "Armor": armor["Hide"]}),
+        "giant spider": Enemy("giant spider", 1, "common", 14, 11, 0, {"str": 14, "dex": 16, "con": 12, "int": 2, "wis": 11, "cha": 4}, {"Weapon": weapons["Bite"], "Armor": armor["Hide"]}),
+        "giant wolf spider": Enemy("giant wolf spider", 1, "common", 13, 11, 0, {"str": 12, "dex": 16, "con": 13, "int": 3, "wis": 12, "cha": 6}, {"Weapon": weapons["Fangs"], "Armor": armor["Hide"]}),
+        "dire wolf": Enemy("dire wolf", 2, "rare", 14, 37, 0, {"str": 17, "dex": 15, "con": 15, "int": 3, "wis": 12, "cha": 7}, {"Weapon": weapons["Claws"], "Armor": armor["Hide"]}),
+        "driad": Enemy("driad", .5, "common", 11, 11, 0, {"str": 10, "dex": 14, "con": 10, "int": 12, "wis": 13, "cha": 14}, {"Weapon": weapons["Dagger"], "Armor": armor["Leather"]}),
     }
     bosses = {
-        "goblin boss": Boss("goblin boss", 5, "common", 17, 21, 0, {"str": 14, "dex": 10, "con": 14, "int": 10, "wis": 8, "cha": 10}, spells[0]),
-        "orc war chief": Boss("orc war chief", 4, "common", 16, 45, 0, {"str": 18, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}, spells[1]),
-        "kobold king": Boss("kobold king", 1, "common", 13, 27, 0, {"str": 9, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}, spells[2]),
-        "bugbear chief": Boss("bugbear chief", 6, "common", 16, 65, 0, {"str": 17, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}, spells[3]),
-        "hobgoblin warlord": Boss("hobgoblin warlord", 5, "common", 18, 45, 0, {"str": 15, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}, spells[4]),
-        "manticore": Boss("Manticore", 3, "common", 14, 68, 0, {"str": 17, "dex": 16, "con": 17, "int": 7, "wis": 12, "cha": 8}, spells[5]),
-        "ogre": Boss("Ogre", 2, "common", 11, 59, 0, {"str": 19, "dex": 8, "con": 16, "int": 5, "wis": 7, "cha": 7}, spells[6]),
-        "warlock": Boss("Warlock", 3, "common", 11, 59, 0, {"str": 8, "dex": 14, "con": 14, "int": 11, "wis": 12, "cha": 16}, spells[7]),
-        "beholder": Boss("Beholder", 5, "common", 18, 180, 0, {"str": 10, "dex": 14, "con": 18, "int": 17, "wis": 15, "cha": 17}, spells[8]),
-        "lich": Boss("Lich", 5, "common", 17, 135, 0, {"str": 11, "dex": 16, "con": 16, "int": 20, "wis": 14, "cha": 16}, spells[8]),
-        "illithid": Boss("Illithid", 7, "common", 15, 71, 0, {"str": 11, "dex": 12, "con": 11, "int": 19, "wis": 17, "cha": 17}, spells[8]),
+        "goblin boss": Boss("goblin boss", 5, "common", 17, 21, 0, {"str": 14, "dex": 10, "con": 14, "int": 10, "wis": 8, "cha": 10}, {"Weapon": weapons["Shortsword"], "Armor": armor["Chainmail"]}, spells[0]), 
+        "orc war chief": Boss("orc war chief", 4, "common", 16, 45, 0, {"str": 18, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10}, {"Weapon": weapons["Greatsword"], "Armor": armor["Plate"]}, spells[1]),
+        "kobold king": Boss("kobold king", 1, "common", 13, 27, 0, {"str": 9, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8}, {"Weapon": weapons["Shortsword"], "Armor": armor["Leather"]}, spells[2]),
+        "bugbear chief": Boss("bugbear chief", 6, "common", 16, 65, 0, {"str": 17, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9}, {"Weapon": weapons["Battleaxe"], "Armor": armor["Chainmail"]}, spells[3]),
+        "hobgoblin warlord": Boss("hobgoblin warlord", 5, "common", 18, 45, 0, {"str": 15, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9}, {"Weapon": weapons["Longsword"], "Armor": armor["Plate"]}, spells[4]),
+        "manticore": Boss("Manticore", 3, "common", 14, 68, 0, {"str": 17, "dex": 16, "con": 17, "int": 7, "wis": 12, "cha": 8}, {"Weapon": weapons["Tail"], "Armor": armor["Leather"]}, spells[5]),
+        "ogre": Boss("Ogre", 2, "common", 11, 59, 0, {"str": 19, "dex": 8, "con": 16, "int": 5, "wis": 7, "cha": 7}, {"Weapon": weapons["Greatclub"], "Armor": armor["Hide"]}, spells[6]),
+        "warlock": Boss("Warlock", 3, "common", 11, 59, 0, {"str": 8, "dex": 14, "con": 14, "int": 11, "wis": 12, "cha": 16}, {"Weapon": weapons["BattleStaff"], "Armor": armor["Leather"]}, spells[7]),
+        "beholder": Boss("Beholder", 9, "common", 18, 180, 0, {"str": 10, "dex": 14, "con": 18, "int": 17, "wis": 15, "cha": 17}, {"Weapon": weapons["Eye Rays"], "Armor": armor["Plate"]}, spells[8]),
+        "lich": Boss("Lich", 11, "common", 17, 135, 0, {"str": 11, "dex": 16, "con": 16, "int": 20, "wis": 14, "cha": 16}, {"Weapon": weapons["Staff of Chaos"], "Armor": armor["Ancient Armor"]}, spells[8]),
+        "illithid": Boss("Illithid", 7, "common", 15, 71, 0, {"str": 11, "dex": 12, "con": 11, "int": 19, "wis": 17, "cha": 17}, {"Weapon": weapons["Tentacles"], "Armor": armor["Astral Armor"]}, spells[8]),
     }
     races = [
         Race("elf", {"str": 0, "dex": 2, "con": 0, "int": 0, "wis": 0, "cha": 0}),
