@@ -478,8 +478,20 @@ class Enemy:
                     hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
                     print(f"The {self.name} rolled a {hit_roll}!")
-                    result = dice_roll.attack_roll(hit_roll, self, player)
+                    result = dice_roll.enemy_attack_roll(hit_roll, self, player)
             return result
+        
+        
+    def update_stats(self):
+        """
+        recalculates the stats of the enemy
+        """
+        if self.equipped["Armor"] != "Empty":
+            self.ac = self.equipped["Armor"].ac + self.modifiers["dex"]
+        self.max_hp = 15 + self.modifiers["con"]
+        self.max_mp = 15 + self.modifiers["int"]
+        self.hp = self.max_hp
+        self.mp = self.max_mp
 
     def __repr__(self):
         return f"--- {self.name} ---\nChallenge Rating: {self.ch_rating}\nArmor Class: {self.ac}\nHP: {self.hp}  " \
@@ -961,6 +973,11 @@ def main():
     set_modifiers(enemies.values())
     set_modifiers(bosses.values())
     
+    for enemy in enemies.values():
+        enemy.update_stats()
+    for boss in bosses.values():
+        boss.update_stats()
+    
     # Creates the player object
     ad = Adventurer()
 
@@ -982,6 +999,7 @@ def main():
         print("\n")
         ad.set_player_stats(ad_stats)
         set_ad_modifiers(ad)
+        ad.update_stats()
         ad.print_character_sheet()
         print(f"Saving Throws: Str - {ad.modifiers['str']} Dex - {ad.modifiers['dex']} Con - {ad.modifiers['con']}")
         print(f"               Int - {ad.modifiers['int']} Wis - {ad.modifiers['wis']} Cha - {ad.modifiers['cha']}")
