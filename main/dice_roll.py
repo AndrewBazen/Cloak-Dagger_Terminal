@@ -84,9 +84,10 @@ def attack_roll(hit_roll, player, enemy):
             print("\n")
             print(f"You dealt {damage} critical damage!")
         else:
+            enemy.hp -= damage
             print("\n")
             print(f"You decimated the {enemy.name}!")
-    elif hit_roll >= enemy.ac:
+    elif hit_roll >= enemy.ac and hit_roll != 20:
         hit = True
         dmg = roll(player.equipped["Weapon"].dmg_dice_num, player.equipped["Weapon"].damage_dice)
         damage = dmg[1]
@@ -95,6 +96,7 @@ def attack_roll(hit_roll, player, enemy):
             print("\n")
             print(f"You dealt {damage} damage!")
         else:
+            enemy.hp -= damage
             print("\n")
             print(f"You defeated the {enemy.name}!")
     else:
