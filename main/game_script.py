@@ -812,6 +812,20 @@ def fight(num_enemies, room, player):
         player.has_attack = True
                         if room.enemies[i].name == attacked_enemy and player.has_attack:
                             player.has_attack = False
+def game_over():
+    """
+    This function ends the game.
+    """
+    print("You died!")
+    print("Game Over!")
+    print("Would you like to play again? (y/n)")
+    play_again = input("")
+    if play_again == 'y' or play_again == 'Y':
+        main()
+    elif play_again == 'n' or play_again == 'N':
+        print("Thanks for playing!")
+        quit()
+                            
 
 def main():
     """
