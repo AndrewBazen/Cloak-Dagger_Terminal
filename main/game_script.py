@@ -1001,17 +1001,19 @@ def main():
                                 done = False
                                 while not done:
                                     print("\n")
-                                    equip = input("Which item would you like to equip?")
+                                    equip = input("Which item would you like to equip?\n")
                                     for item in ad.backpack["Weapons"]:
-                                        if item.name == equip:
-                                            ad.equip_weapon(item)
-                                            done = True
+                                        if item.name != equip:
+                                            continue
+                                        ad.equip_weapon(item)
+                                        done = True
                                     for item in ad.backpack["Armor"]:
-                                        if item.name == equip:
-                                            ad.equip_armor(item)
-                                            done = True
-                                        else:
-                                            print("That item is not in your backpack!")
+                                        if item.name != equip:
+                                            continue
+                                        ad.equip_armor(item)
+                                        done = True
+                                    if not done:
+                                        print("That item is not in your backpack!")
                 case 3:            # enters the dungeon
                     
                     # Creates the dungeon
