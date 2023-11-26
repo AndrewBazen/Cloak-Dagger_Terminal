@@ -64,6 +64,28 @@ class LinkedList:
 
     def is_empty(self):
         return self.head is None
+    
+def get_enemy_loot(enemy, loot, rare_loot):
+    """
+    this function returns a list of loot that the enemy drops
+
+    Args:
+        enemy (Enemy): the enemy that is dropping loot
+        loot (List): a list of loot that can be found in the dungeon
+        rare_loot (List): a list of rare loot that can be found in the dungeon
+
+    Returns:
+        List: a list of loot that the enemy drops
+    """
+    if enemy.drop_class == "common":
+        enemy_loot = [loot[random.randint(0, len(loot)-1)]]
+    elif enemy.drop_class == "rare":
+        drop_chance = random.randint(1, 100)
+        if drop_chance <= 10:
+            enemy_loot = [rare_loot[random.randint(0, len(rare_loot)-1)]]
+        else:
+            enemy_loot = [loot[random.randint(0, len(loot)-1)]]
+    return enemy_loot
 
 
 def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
@@ -93,7 +115,7 @@ def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
                 room_filled = False
                 lvl_enemies = []
                 scaled_enemies = []
-                added_enemy_types = []
+                enemy_loot = []
                 num_enemies = random.randint(1, 3)    # number of enemies in the room
                 
                 # create a list of enemies that are within 1 challenge rating of the player or less
@@ -115,16 +137,14 @@ def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
                     
                     # if there is only one enemy in the room, choose a random enemy from the list
                     if num_enemies == 1:
-                        enemy_type = [lvl_enemies[random.randint(0, len(lvl_enemies))]]    # choose a random enemy from the list
-                        dungeon.insert("Fight room", num_enemies, enemy_type, None, None)
+                        enemy_loot.append(get_enemy_loot(enemy_type[0], loot, rare_loot))
                         room_filled = True
                         counter -= 1
                     # if there are more than one enemy in the room, choose a random number of enemy types from the list
                     else:
                         enemy_types = random.randint(1, num_enemies)
                         if enemy_types == 1:
-                            enemy_type = [scaled_enemies[random.randint(0, len(scaled_enemies))]]  # choose a random enemy from the list
-                            dungeon.insert("Fight room", num_enemies, enemy_type, None, None)
+                                enemy_loot.append(get_enemy_loot(enemy_to_add, loot, rare_loot))
                             room_filled = True
                             counter -= 1
                         else:
@@ -139,7 +159,7 @@ def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
                                 if enemy_type in enemy_types_to_add:
                                     continue
                                 enemy_types_to_add.append(enemy_type)
-                            dungeon.insert("Fight room", 1, added_enemy_types, None)
+                                enemy_loot.append(get_enemy_loot(enemy_type, loot, rare_loot))
                             room_filled = True
             case 2:
                 dungeon.insert("Loot room", None, None, loot[random.randint(0, 1)], None)
