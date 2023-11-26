@@ -391,11 +391,13 @@ class AdClass:
     class for character classes
     """
     
-    def __init__(self, name, hit_dice, modifiers={"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}):
+    def __init__(self, name="", hit_dice="d8", modifiers={"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}):
         self.name = name
         self.hit_dice = hit_dice
         self.modifiers = modifiers
         
+    def __repr__(self):
+        return f"{self.name}"
         
 class Race:
     """
@@ -405,7 +407,9 @@ class Race:
     def __init__(self, name="", modifiers={"str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0}):
         self.name = name
         self.modifiers = modifiers
-
+        
+    def __repr__(self):
+        return f"{self.name}"
 
 class Enemy:
     """
@@ -488,10 +492,13 @@ class Boss(Enemy):
         Enemy (Class): the parent class
     """
     
-    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats, modifiers, special_attack):
-        super().__init__(name, ch_rating, drop_class, ac, hp, mp, stats, modifiers)
+    def __init__(self, name, ch_rating, drop_class, ac, hp, mp, stats, special_attack):
+        super().__init__(name, ch_rating, drop_class, ac, hp, mp, stats)
         self.special_attack = special_attack
         
+    def __repr__(self):
+        return super().__repr__() + f"\nSpecial Attack: {self.special_attack}"
+                
         
 class Spell():
     """
@@ -506,6 +513,10 @@ class Spell():
         self.dmg_dice_num = dmg_dice_num
         self.mp_cost = mp_cost
         self.num_targets = num_targets
+        
+    def __repr__(self):
+        return f"--- {self.name} ---\nLevel: {self.level}\nDamage Type: {self.dmg_type}\nDamage: {self.dmg_dice_num}" \
+               f"{self.dmg_dice}\nMP Cost: {self.mp_cost}\nNumber of Targets: {self.num_targets}"
                
 class Item:
     """
@@ -519,7 +530,7 @@ class Item:
         self.description = ""
 
     def __repr__(self):
-        return f"--- {self.name} ---\nType: {self.item_type} Rarity: {self.rarity}\nDescription: {self.description}"
+        return f"--- {self.name} ---\nType: {self.item_type}\nRarity: {self.rarity}\nDescription: {self.description}"
     
 class Weapon(Item):
     """
@@ -536,6 +547,10 @@ class Weapon(Item):
         self.dmg_dice_num = dmg_dice_num
         self.damage_dice = damage_dice
         self.bonus = bonus
+        
+    def __repr__(self):
+        return super().__repr__() + f"\nWeapon Type: {self.weapon_type}\nDamage: {self.dmg_dice_num}{self.damage_dice}" \
+                                     f"\nBonus: {self.bonus}"
 
 class Armor(Item):
     """
@@ -549,6 +564,9 @@ class Armor(Item):
         super().__init__(name, item_type, rarity, description)
         self.ac = ac
         self.bonus = bonus
+        
+    def __repr__(self):
+        return super().__repr__() + f"\nArmor Class: {self.ac}\nBonus: {self.bonus}"
         
 class Consumable(Item):
     """
@@ -564,7 +582,8 @@ class Consumable(Item):
         self.effect = effect
         self.effect_dice = effect_dice
         
-
+    def __repr__(self):
+        return super().__repr__() + f"\nEffect: {self.effect}\nEffect Dice: {self.effect_dice}"
 
 def set_ad_modifiers(ad):
     """
