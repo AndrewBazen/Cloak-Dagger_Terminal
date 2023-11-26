@@ -4,12 +4,11 @@ import dice_roll
 
 class RoomNode:
 
-    def __init__(self, val, num_enemies=1, enemies=[], loot=None, puzzles=None):
+    def __init__(self, val, num_enemies=0, enemies=[], loot=[]):
         self.val = val
         self.next = None
         self.num_enemies = num_enemies
         self.enemies = enemies
-        self.puzzles = puzzles
         self.loot = loot
         
     def get_data(self):
