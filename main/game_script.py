@@ -774,6 +774,30 @@ def reveal_room(room, ad):
     Returns:
         Boolean: True if the player dies, False if the player wins
     """
+def print_enemies_left(room):
+    """
+    prints the enemies left in the room
+
+    Args:
+        room (RoomNode): the room object
+    """
+    if room.num_enemies == 1:
+        print(f"There is {room.num_enemies} {room.enemies[0].name} left!")
+    else:
+        enemies_stated = {}
+        for enemy in room.enemies:
+            enemy_num = room.enemies.count(enemy)
+            if enemy not in enemies_stated:
+                enemies_stated[enemy] = enemy_num
+        for e in enemies_stated.keys():
+            if e == enemies_stated.keys()[0]:
+                print(f"There are {enemies_stated[e]} {e}s left!")
+            elif e == enemies_stated.keys()[-1]:
+                print(f"and {enemies_stated[e]} {e}s left!")
+            else:
+                print(f", {enemies_stated[e]} {e}s left!")
+
+
 def fight(room, player):
     """ 
     This function runs the fight between the player and the enemies.
