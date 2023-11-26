@@ -18,6 +18,7 @@ class Adventurer:
         self.total_exp = 0
         self.exp_to_next_lvl = 100
         self.ad_class = AdClass()
+        self.has_attack = True
         self.has_adv = False
         self.num_actions = 1
         self.max_hp = 15
@@ -808,39 +809,9 @@ def fight(num_enemies, room, player):
     Returns:
         boolean: True if the player dies, False if the player wins
     """
-    win = False
-    while player.hp > 0 and num_enemies > 0:             # while player is alive and there are enemies left
-        while not win:
-            print(f"{room.enemy[num_enemies-1].name}s left: {num_enemies}")
-            print(f"Current {room.enemy[num_enemies-1].name}s health: {room.enemy[num_enemies-1].hp}")
-            print("\n")
-            print(f"Your health: {player.hp}")
-            print("\n")
-            fight_menu()
-            fight_option = input("What would you like to do?")
-            match int(fight_option):
-                case 1:                        # list inventory
-                    player.check_inventory()
-                case 2:                        # use item
-                    print("\n")
-                    player.check_inventory()
-                    use = input("Which item would you like to use?")
-                    for item in player.backpack["Consumables"]:
-                        if item.name == use:
-                            player.use_item(item)
-                        else:
-                            print("That item is not in your backpack!")
-                case 3:                        # attack
-                    player.attack(room.enemy[num_enemies-1])
-                    if room.enemy[num_enemies-1].hp <= 0:              # checks if the enemy is dead
-                        num_enemies -= 1
-                        print("\n")
-                        print(f"There are {num_enemies} left!")
-                    else:
-                        room.enemy[num_enemies-1].attack(player)       # enemy attacks
-            if num_enemies == 0:
-                win = True
-
+        player.has_attack = True
+                        if room.enemies[i].name == attacked_enemy and player.has_attack:
+                            player.has_attack = False
 
 def main():
     """
