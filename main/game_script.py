@@ -763,7 +763,7 @@ def fight_menu():
     print("4. Run")
 
 
-def reveal_room(room, ad):
+def reveal_room(dungeon, ad):
     """
     Prints the room description and the enemies in the room.
 
@@ -774,6 +774,44 @@ def reveal_room(room, ad):
     Returns:
         Boolean: True if the player dies, False if the player wins
     """
+    ad.current_room = dungeon.head
+    while ad.current_room.val != "boss room":
+        room_type = ad.current_room.val
+        match room_type:
+            case "Fight room":
+                enemy_types = []
+                if ad.current_room.num_enemies == 1:
+                    print(f"your find yourself in a dark room with a {ad.current_room.enemies[0].name}")
+                else:
+                    for enemy in ad.current_room.enemies:
+                        if enemy not in enemy_types:
+                            enemy_types.append(enemy)
+                    if len(enemy_types) == 1:
+                        print(f"your find yourself in a dark room with {ad.current_room.num_enemies} {enemy_types[0].name}s")
+                    else:
+                        for enemy in enemy_types:
+                            enemy_num = ad.current_room.enemies.count(enemy)
+                            if enemy == enemy_types[0]:
+                                print(f"your find yourself in a dark room with {enemy_num} {enemy.name}s ")
+                            elif enemy == enemy_types[-1]:
+                                print(f"and {enemy_num} {enemy.name}s ")
+                            else:
+                                print(f", {enemy_num} {enemy.name}s ")
+                room_complete = fight(ad.current_room, ad)
+                if room_complete:
+                    ad.current_room = ad.current_room.next
+                    
+            case "Loot room":             #TODO: add loot room
+                pass
+            case "Rest room":             #TODO: add rest room
+                pass
+            case "boss room":             #TODO: add boss room
+                pass
+    print("You have reached the end of the dungeon!")
+    print("You win!")
+    #TODO: add win screen
+    
+
 def print_enemies_left(room):
     """
     prints the enemies left in the room
