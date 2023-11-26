@@ -1034,7 +1034,7 @@ def main():
                                                          1)
                     # The dungeon loop
                     while not new_dungeon.is_empty():
-                        game_over = reveal_room(new_dungeon.head, ad)
+                        game_over = reveal_room(new_dungeon, ad)
                         if game_over:
                             curr_char_alive = False
                             break
