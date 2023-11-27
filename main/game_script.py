@@ -545,14 +545,6 @@ class Item:
     def __init__(self, name="Empty", item_type="other", rarity="common", description=""):
         self.name = name
         self.rarity = rarity
-        self.bonus = 0
-        self.dmg_dice = ""
-        self.th_dmg_dice = ""
-        self.dmg_dice_num = ""
-        self.th_dmg_dice_num = ""
-        self.effect_dice = ""
-        self.weapon_type = ""
-        self.weapon_property = ""
         self.item_type = item_type
         self.description = description
 
