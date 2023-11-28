@@ -785,24 +785,39 @@ def reveal_room(dungeon, ad):
         room_type = ad.current_room.val
         match room_type:
             case "Fight room":
+                enemy_names = []
                 enemy_types = []
+                enemy_used = []
+                enemy_info = {}
                 if ad.current_room.num_enemies == 1:
                     print(f"your find yourself in a dark room with a {ad.current_room.enemies[0].name}")
                 else:
                     for enemy in ad.current_room.enemies:
-                        if enemy not in enemy_types:
-                            enemy_types.append(enemy)
+                        if enemy.name not in enemy_types:
+                            enemy_types.append(enemy.name)
+                        enemy_names.append(enemy.name)
                     if len(enemy_types) == 1:
-                        print(f"your find yourself in a dark room with {ad.current_room.num_enemies} {enemy_types[0].name}s")
+                        print(f"your find yourself in a dark room with {ad.current_room.num_enemies} {enemy_types[0]}s")
                     else:
                         for enemy in enemy_types:
-                            enemy_num = ad.current_room.enemies.count(enemy)
-                            if enemy == enemy_types[0]:
-                                print(f"your find yourself in a dark room with {enemy_num} {enemy.name}s ")
-                            elif enemy == enemy_types[-1]:
-                                print(f"and {enemy_num} {enemy.name}s ")
+                            if enemy in enemy_used:
+                                continue
+                            enemy_num = enemy_names.count(enemy)
+                            enemy_info[enemy] = enemy_num
+                            enemy_used.append(enemy)
+                        for enemy in enemy_types:
+                            if enemy == enemy_types[0] and enemy_info[enemy] != 1:
+                                print(f"your find yourself in a dark room with {enemy_info[enemy]} {enemy}s ")
+                            elif enemy == enemy_types[0] and enemy_info[enemy] == 1:
+                                print(f"your find yourself in a dark room with a {enemy}")
+                            elif enemy == enemy_types[-1] and enemy_info[enemy] != 1:
+                                print(f"and {enemy_info[enemy]} {enemy}s ")
+                            elif enemy == enemy_types[-1] and enemy_info[enemy] == 1:
+                                print(f"and a {enemy}")
+                            elif enemy != enemy_types[0] and enemy != enemy_types[-1] and enemy_info[enemy] == 1:
+                                print(f", a {enemy}")
                             else:
-                                print(f", {enemy_num} {enemy.name}s ")
+                                print(f", {enemy_info[enemy]} {enemy}s ")
                 room_complete = fight(ad.current_room, ad)
                 if room_complete:
                     ad.current_room = ad.current_room.next
