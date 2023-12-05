@@ -3,7 +3,7 @@ import time
 import sys
 
 
-def slow_print(text, delay=0.1, end='', flush=False):
+def slow_print(text, delay=0.1, end='\n', flush=True):
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
@@ -13,16 +13,16 @@ def slow_print(text, delay=0.1, end='', flush=False):
         sys.stdout.flush()
 
 
-def loading_animation(duration=5, delay=0.1):
+def loading_animation(string, duration=3, delay=0.1):
     animation_chars = ['|', '/', '-', '\\']
 
     start_time = time.time()
     while time.time() - start_time < duration:
         for char in animation_chars:
-            sys.stdout.write('\r' + char)
+            sys.stdout.write('\r' + string + char)
             sys.stdout.flush()
             time.sleep(delay)
-
+            
 
 def roll(num_dice, dice_type):
     rolls = []
@@ -31,17 +31,7 @@ def roll(num_dice, dice_type):
             counter = num_dice
             dice_total = 0
             while counter > 0:
-                # Print loading text
-                slow_print(f"Rolling {dice_type}...")
-                loading_animation()
-                
                 rand = random.randint(1, 20)
-                
-                # Print the result of the roll
-                for i in range(num_dice):
-                    slow_print(f"Roll number {1} is {rand}")
-                    time.sleep(0.5)
-                
                 rolls.append(rand)
                 dice_total += rand
                 counter = counter - 1
@@ -50,18 +40,7 @@ def roll(num_dice, dice_type):
             counter = num_dice
             dice_total = 0
             while counter > 0:
-                # Print loading text
-                slow_print(f"Rolling {dice_type}...")
-                time.sleep(1)
-                loading_animation()
-                
                 rand = random.randint(1, 12)
-                
-                # Print the result of the roll
-                for i in range(num_dice):
-                    slow_print(f"Roll number {i} is {rand}")
-                    time.sleep(0.5)
-                    
                 rolls.append(rand)
                 dice_total += rand
                 counter = counter - 1
@@ -104,14 +83,127 @@ def roll(num_dice, dice_type):
             return rolls, dice_total
 
 
+def roll_terminal(num_dice, dice_type):
+    rolls = []
+    match dice_type:
+        case "d20":
+            counter = num_dice
+            dice_total = 0
+            # Print loading text
+            roll_text = f"Rolling {num_dice}{dice_type}..."
+            slow_print(roll_text, end='', flush=False)
+            loading_animation(roll_text)
+            print("\n")
+            while counter > 0:
+                # Print the result of the roll
+                rand = random.randint(1, 6)
+                slow_print(f"{rand}")
+                time.sleep(0.5)
+                
+                rolls.append(rand)
+                dice_total += rand
+                counter = counter - 1
+            return rolls, dice_total
+        case "d12":
+            counter = num_dice
+            dice_total = 0
+            # Print loading text
+            roll_text = f"Rolling {num_dice}{dice_type}..."
+            slow_print(roll_text, end='', flush=False)
+            loading_animation(roll_text)
+            print("\n")
+            while counter > 0:
+                # Print the result of the roll
+                rand = random.randint(1, 6)
+                slow_print(f"{rand}")
+                time.sleep(0.5)
+                    
+                rolls.append(rand)
+                dice_total += rand
+                counter = counter - 1
+            return rolls, dice_total
+        case "d10":
+            counter = num_dice
+            dice_total = 0
+            # Print loading text
+            roll_text = f"Rolling {num_dice}{dice_type}..."
+            slow_print(roll_text, end='', flush=False)
+            loading_animation(roll_text)
+            print("\n")
+            while counter > 0:
+                # Print the result of the roll
+                rand = random.randint(1, 6)
+                slow_print(f"{rand}")
+                time.sleep(0.5)
+
+                rolls.append(rand)
+                dice_total += rand
+                counter = counter - 1
+            return rolls, dice_total
+        case "d8":
+            counter = num_dice
+            dice_total = 0
+            # Print loading text
+            roll_text = f"Rolling {num_dice}{dice_type}..."
+            slow_print(roll_text, end='', flush=False)
+            loading_animation(roll_text)
+            print("\n")
+            while counter > 0:
+                # Print the result of the roll
+                rand = random.randint(1, 6)
+                slow_print(f"{rand}")
+                time.sleep(0.5)
+
+                rolls.append(rand)
+                dice_total += rand
+                counter = counter - 1
+            return rolls, dice_total
+        case "d6":
+            counter = num_dice
+            dice_total = 0
+            # Print loading text
+            roll_text = f"Rolling {num_dice}{dice_type}..."
+            slow_print(roll_text, end='', flush=False)
+            loading_animation(roll_text)
+            print("\n")
+            while counter > 0:
+                rand = random.randint(1, 6)
+                slow_print(f"{rand}")
+                time.sleep(0.5)
+                    
+                rolls.append(rand)
+                dice_total += rand
+                counter = counter - 1
+            return rolls, dice_total
+        case "d4":
+            counter = num_dice
+            dice_total = 0
+            # Print loading text
+            roll_text = f"Rolling {num_dice}{dice_type}..."
+            slow_print(roll_text, end='', flush=False)
+            loading_animation(roll_text)
+            print("\n")
+            while counter > 0:
+                # Print the result of the roll
+                rand = random.randint(1, 6)
+                slow_print(f"{rand}")
+                time.sleep(0.5)
+
+                rolls.append(rand)
+                dice_total += rand
+                counter = counter - 1
+            return rolls, dice_total
+
+
 def roll_stats():
     stats = []
     while len(stats) < 6:
         total = 0
-        result = roll(4, "d6")[0]
+        result = roll_terminal(4, "d6")[0]
         result.remove(min(result))
         for num in result:
             total += num
+        slow_print(f"\nStat {len(stats)} Total: {total}")
         stats.append(total)
     return stats
 
