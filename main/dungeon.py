@@ -1,4 +1,5 @@
 import random
+import game_script
 import dice_roll
 import copy
 
@@ -88,8 +89,30 @@ def get_enemy_loot(enemy, loot, rare_loot):
     new_loot = copy.deepcopy(enemy_loot)
     return new_loot
 
+def get_loot(player, loot, rare_loot):
+    """
+    this function returns a list of loot that the player finds in a loot room
 
-def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
+    Args:
+        player (Player): the player that is finding loot
+        loot (List): a list of loot that can be found in the dungeon
+        rare_loot (List): a list of rare loot that can be found in the dungeon
+
+    Returns:
+        List: a list of loot that the player finds
+    """
+    loot_found = []
+    loot_roll = dice_roll.roll(1, "d100")[1]
+    if loot_roll <= 10:
+        new_loot = copy.deepcopy(rare_loot[random.randint(0, len(rare_loot)-1)])
+        loot_found.append(new_loot)
+    else:
+        new_loot = copy.deepcopy(loot[random.randint(0, len(loot)-1)])
+        loot_found.append(new_loot)
+    return loot_found
+
+
+def create_dungeon(player, loot, rare_loot, enemies, bosses, num_rooms):
     """
     this function creates a dungeon based on the player's level and the a predetermined list of enemies, loot, and bosses
 
@@ -107,7 +130,7 @@ def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
     dungeon = LinkedList()
     lvl_bosses = []
     for boss in bosses.values():
-        if boss.ch_rating > player_level + 2:
+        if boss.ch_rating > player.level + 2:
             continue
         else:
             new_boss = copy.deepcopy(boss)
@@ -116,7 +139,7 @@ def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
     dungeon.head = RoomNode("boss room", 1, lvl_bosses[random.randint(0, len(lvl_bosses)-1)], rare_loot[random.randint(0, len(rare_loot)-1)])
     counter = num_rooms
     while counter > 0:
-        # room_roll = dice_roll.roll(1, "d4")
+        room_roll = dice_roll.roll(1, "d4")
         room_roll = 1
         match room_roll:
             case 1:
@@ -129,7 +152,7 @@ def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
                 
                 # create a list of enemies that are within 1 challenge rating of the player or less
                 for enemy in enemies.values():
-                    if enemy.ch_rating > player_level + 1:
+                    if enemy.ch_rating > player.level + 1:
                         continue
                     else:
                         new_enemy = copy.deepcopy(enemy)
@@ -137,7 +160,7 @@ def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
                         
                 # create a list of enemies that are within 1 challenge rating of the player or less, scaled to the number of enemies in the room
                 for enemy in enemies.values():
-                    if enemy.ch_rating * num_enemies > player_level + 1:
+                    if enemy.ch_rating * num_enemies > player.level + 1:
                         continue
                     else:
                         new_enemy = copy.deepcopy(enemy)
@@ -185,7 +208,7 @@ def create_dungeon(player_level, loot, rare_loot, enemies, bosses, num_rooms):
                             room_filled = True
                             counter -= 1
             case 2:
-                dungeon.insert("Loot room", 0, [], [loot[random.randint(0, len(loot)-1)]])
+                dungeon.insert("Loot room", 0, [], get_loot(player, loot, rare_loot))     
                 counter -= 1
             case 3:
                 dungeon.insert("Rest room", 0, [], [])

@@ -746,9 +746,29 @@ def in_game_menu():
     print("3  Use item")
     print("4. Next Room")
     print("5. Quit game")
+    
+
+def loot_room(chest_open):
+    """
+    This function prints the loot room menu for the game.
+    """
+    if chest_open:
+        print("****      Loot Room      ****")
+        print("1. Check Character")
+        print("2. Check Inventory")
+        print("3. Use item")
+        print("4. Next Room")
+        print("5. Quit game")
+    print("****      Loot Room      ****")
+    print("1. Check Character")
+    print("2. Check Inventory")
+    print("3. Use item")
+    print("4. Open chest")
+    print("5. Next Room")
+    print("6. Quit game")
 
 
-def inventory_menu():
+def inventory_menu(player):
     """
     This function prints the inventory menu for the game.
     """
@@ -756,131 +776,95 @@ def inventory_menu():
     print("1. List inventory")
     print("2. Equip item")
     print("3. Go back")
+    inv_choice = input("\nplease make a selection\n")
+    while inv_choice != '3':
+        match int(inv_choice):
+            case 1:           # lists the inventory
+                player.check_inventory()
+            case 2:           # equips an item
+                done = False
+                while not done:
+                    print("\n")
+                    equip = input("Which item would you like to equip?\n")
+                    for item in player.backpack["Weapons"]:
+                        if item.name != equip:
+                            continue
+                        player.equip_weapon(item)
+                        done = True
+                    for item in player.backpack["Armor"]:
+
+                        if item.name != equip:
+                            continue
+                        player.equip_armor(item)
+                        done = True
+                    if not done:
+                        print("That item is not in your backpack!")
+            case 3:           # goes back to the previous menu
+                done = True
 
 
-def fight_menu():
+def boss_fight_menu(room, player):
     """
-    This function prints the fight menu for the game.
+    This function prints the fight menu for the boss room.
     """
+    room_complete = False
+    player.has_attack = True
+    print("\n")
+    print(f"{room.enemies[0].name}s health: {room.enemies[0].hp}")
+    print("\n")
+    print(f"Your health: {player.hp}")
+    print("\n")
     print("****      Fight      ****")
     print("1. List inventory")
     print("2. Use item")
     print("3. attack")
     print("4. Run")
-
-
-def reveal_room(dungeon, ad):
-    """
-    Prints the room description and the enemies in the room.
-
-
-    Args:
-        room (RoomNode): the room object
-        ad (Adventurer): the player object
-
-    Returns:
-        Boolean: True if the player dies, False if the player wins
-    """
-    ad.current_room = dungeon.head
-    while ad.current_room.val != "boss room":
-        room_type = ad.current_room.val
-        match room_type:
-            case "Fight room":
-                enemy_names = []
-                enemy_types = []
-                enemy_used = []
-                enemy_info = {}
-                if ad.current_room.num_enemies == 1:
-                    print(f"your find yourself in a dark room with a {ad.current_room.enemies[0].name}")
-                else:
-                    for enemy in ad.current_room.enemies:
-                        if enemy.name not in enemy_types:
-                            enemy_types.append(enemy.name)
-                        enemy_names.append(enemy.name)
-                    if len(enemy_types) == 1:
-                        print(f"your find yourself in a dark room with {ad.current_room.num_enemies} {enemy_types[0]}s")
-                    else:
-                        for enemy in enemy_types:
-                            if enemy in enemy_used:
-                                continue
-                            enemy_num = enemy_names.count(enemy)
-                            enemy_info[enemy] = enemy_num
-                            enemy_used.append(enemy)
-                        for enemy in enemy_types:
-                            if enemy == enemy_types[0] and enemy_info[enemy] != 1:
-                                print(f"your find yourself in a dark room with {enemy_info[enemy]} {enemy}s ")
-                            elif enemy == enemy_types[0] and enemy_info[enemy] == 1:
-                                print(f"your find yourself in a dark room with a {enemy}")
-                            elif enemy == enemy_types[-1] and enemy_info[enemy] != 1:
-                                print(f"and {enemy_info[enemy]} {enemy}s ")
-                            elif enemy == enemy_types[-1] and enemy_info[enemy] == 1:
-                                print(f"and a {enemy}")
-                            elif enemy != enemy_types[0] and enemy != enemy_types[-1] and enemy_info[enemy] == 1:
-                                print(f", a {enemy}")
-                            else:
-                                print(f", {enemy_info[enemy]} {enemy}s ")
-                room_complete = fight(ad.current_room, ad)
-                if room_complete:
-                    ad.current_room = ad.current_room.next
-                    
-            case "Loot room":             #TODO: add loot room
-                pass
-            case "Rest room":             #TODO: add rest room
-                pass
-            case "boss room":             #TODO: add boss room
-                pass
-    print("You have reached the end of the dungeon!")
-    print("You win!")
-    #TODO: add win screen
-    
-
-
-def print_enemies_left(room):
-    """
-    prints the enemies left in the room
-
-    Args:
-        room (RoomNode): the room object
-    """
-    if room.num_enemies == 1:
-        print(f"There is {room.num_enemies} {room.enemies[0].name} left!")
-    else:
-        enemies_stated = {}
-        for enemy in room.enemies:
-            enemy_num = room.enemies.count(enemy)
-            if enemy not in enemies_stated:
-                enemies_stated[enemy] = enemy_num
-        for e in enemies_stated.keys():
-            if e == enemies_stated.keys()[0]:
-                print(f"There are {enemies_stated[e]} {e}s left!")
-            elif e == enemies_stated.keys()[-1]:
-                print(f"and {enemies_stated[e]} {e}s left!")
-            else:
-                print(f", {enemies_stated[e]} {e}s left!")
-
-
-def fight(room, player):
-    """ 
-    This function runs the fight between the player and the enemies.
-
-    Args:
-        num_enemies (int): the number of enemies in the room
-        enemy (Enemy): the enemy object
-        player (Adventurer): the player object
-
-    Returns:
-        boolean: True if the player dies, False if the player wins
-    """
-    room_complete = False
-    while not room_complete:             # while player is alive and there are enemies left
-        player.has_attack = True
-        for enemy in room.enemies:
+    fight_option = input("What would you like to do?")
+    match int(fight_option):
+        case 1:                        # list inventory
+            player.check_inventory()
+        case 2:                        # use item
             print("\n")
-            print(f"{enemy.name}s health: {enemy.hp}")
+            player.check_inventory()
+            use = input("Which item would you like to use?")
+            for item in player.backpack["Consumables"]:
+                if item.name == use:
+                    player.use_item(item)
+                else:
+                    print("That item is not in your backpack!")
+        case 3:                         # attack
+            player.attack(room.enemies[0])
+            if room.enemies[0].hp <= 0:
+                print("\n")
+                print(f"You killed the {room.enemies[0].name}!")
+                print("\n")
+                room_complete = True
+            else:
+                room.enemies[0].attack(player)
+                if player.hp <= 0:
+                    game_over()
+    return room_complete
+
+
+def fight_menu(room, player):
+    """
+    This function prints the fight menu for the enemy rooms.
+
+    Args:
+        room (RoomNode): the room object
+        player (Adventurer): the player object
+    """
+    for enemy in room.enemies:
+        print("\n")
+        print(f"{enemy.name}s health: {enemy.hp}")
         print("\n")
         print(f"Your health: {player.hp}")
         print("\n")
-        fight_menu()
+        print("****      Fight      ****")
+        print("1. List inventory")
+        print("2. Use item")
+        print("3. attack")
+        print("4. Run")
         fight_option = input("What would you like to do?")
         match int(fight_option):
             case 1:                        # list inventory
@@ -928,15 +912,15 @@ def fight(room, player):
                     player.attack(room.enemies[0])
                     player.has_attack = False
                     if room.enemies[0].hp <= 0: # checks if the enemy is dead
-                        last_enemy = room.enemies[0]
                         room.enemies.remove(room.enemies[0])
                         room.num_enemies -= 1
                         print("\n")
-                        print(f"You killed the {last_enemy.name}!")
-                        print("\n")
                         print("time to move on!")
-                        player_choice = in_game_menu()
-                        while player_choice != 4 or player_choice != 5:
+                        in_game_menu()
+                        print("\n")
+                        player_choice = 0
+                        while player_choice != 4 and player_choice != 5:
+                            player_choice = input("What would you like to do?")
                             if player_choice == 1:
                                 player.print_character_sheet()
                             elif player_choice == 2:
@@ -961,6 +945,237 @@ def fight(room, player):
                         room.enemies[0].attack(player)
                         if player.hp <= 0:
                             game_over()
+
+
+def reveal_room(dungeon, ad):
+    """
+    Prints the room description and the enemies in the room.
+
+
+    Args:
+        room (RoomNode): the room object
+        ad (Adventurer): the player object
+
+    Returns:
+        Boolean: True if the player dies, False if the player wins
+    """
+    ad.current_room = dungeon.head
+    while ad.current_room.val != "boss room":
+        room_type = ad.current_room.val
+        match room_type:
+            case "Fight room":
+                enemy_names = []
+                enemy_types = []
+                enemy_used = []
+                enemy_info = {}
+                if ad.current_room.num_enemies == 1:
+                    slow_print(f"you find yourself in a dark room with a {ad.current_room.enemies[0].name}")
+                else:
+                    for enemy in ad.current_room.enemies:
+                        if enemy.name not in enemy_types:
+                            enemy_types.append(enemy.name)
+                        enemy_names.append(enemy.name)
+                    if len(enemy_types) == 1:
+                        slow_print(f"your find yourself in a dark room with {ad.current_room.num_enemies} {enemy_types[0]}s")
+                    else:
+                        for enemy in enemy_types:
+                            if enemy in enemy_used:
+                                continue
+                            enemy_num = enemy_names.count(enemy)
+                            enemy_info[enemy] = enemy_num
+                            enemy_used.append(enemy)
+                        for enemy in enemy_types:
+                            if enemy == enemy_types[0] and enemy_info[enemy] != 1:
+                                slow_print(f"your find yourself in a dark room with {enemy_info[enemy]} {enemy}s ")
+                            elif enemy == enemy_types[0] and enemy_info[enemy] == 1:
+                                slow_print(f"your find yourself in a dark room with a {enemy}")
+                            elif enemy == enemy_types[-1] and enemy_info[enemy] != 1:
+                                slow_print(f"and {enemy_info[enemy]} {enemy}s ")
+                            elif enemy == enemy_types[-1] and enemy_info[enemy] == 1:
+                                slow_print(f"and a {enemy}")
+                            elif enemy != enemy_types[0] and enemy != enemy_types[-1] and enemy_info[enemy] == 1:
+                                slow_print(f", a {enemy}")
+                            else:
+                                slow_print(f", {enemy_info[enemy]} {enemy}s ")
+                room_complete = fight(ad.current_room, ad)
+                if room_complete:
+                    ad.current_room = ad.current_room.next
+                    
+            case "Loot room":             
+                ad.current_room.chest_open = False
+                loot_choice = 0
+                while not ad.current_room.chest_open:
+                    print("\n")
+                    loot_room(ad.current_room.chest_open)
+                    print("\n")
+                    loot_choice = slow_print(input("What would you like to do?"))
+                    match int(loot_choice):
+                        case 1:
+                            ad.print_character_sheet()
+                        case 2:
+                            ad.check_inventory()
+                        case 3:
+                            print("\n")
+                            ad.check_inventory()
+                            use = input("Which item would you like to use?")
+                            for item in ad.backpack["Consumables"]:
+                                if item.name == use:
+                                    ad.use_item(item)
+                                else:
+                                    print("That item is not in your backpack!")
+                        case 4:
+                            ad.current_room.chest_open = True
+                            print("\n")
+                            print("You heave the chest open and find ")
+                            for item in ad.current_room.loot:
+                                print(f"{item.name}")
+                                ad.add_item(item)
+                        case 5:
+                            ad.current_room = ad.current_room.next
+                        case 6:
+                            game_over()
+                        case _:
+                            print("That is not an option!")
+                while ad.current_room.chest_open and loot_choice != 5 and loot_choice != 4:
+                    print("\n")
+                    loot_room(ad.current_room.chest_open)
+                    print("\n")
+                    loot_choice = input("What would you like to do?")
+                    match int(loot_choice):
+                        case 1:
+                            ad.print_character_sheet()
+                        case 2:
+                            ad.check_inventory()
+                        case 3:
+                            print("\n")
+                            ad.check_inventory()
+                            use = input("Which item would you like to use?")
+                            for item in ad.backpack["Consumables"]:
+                                if item.name == use:
+                                    ad.use_item(item)
+                                else:
+                                    print("That item is not in your backpack!")
+                        case 4:
+                            ad.current_room = ad.current_room.next
+                        case 5:
+                            game_over()
+                        case _:
+                            print("That is not an option!")
+                
+            case "Rest room":
+                print("You find yourself in a room with a bed and a table with food on it")
+                print("You decide to take a rest and regain your strength")
+                ad.hp = ad.max_hp
+                ad.mp = ad.max_mp
+                print("You are now at full health and mana!")
+                choice = 0
+                while choice != 4 and choice != 5:
+                    print("\n")
+                    in_game_menu()
+                    print("\n")
+                    choice = input("What would you like to do?")
+                    match int(choice):
+                        case 1:
+                            ad.print_character_sheet()
+                        case 2:
+                            ad.check_inventory()
+                        case 3:
+                            print("\n")
+                            ad.check_inventory()
+                            use = input("Which item would you like to use?")
+                            for item in ad.backpack["Consumables"]:
+                                if item.name == use:
+                                    ad.use_item(item)
+                                else:
+                                    print("That item is not in your backpack!")
+                        case 4:
+                            ad.current_room = ad.current_room.next
+                        case 5:
+                            game_over()
+                        case _:
+                            print("That is not an option!")
+            case "Empty room":
+                print("You find yourself in an empty room")
+                choice = 0
+                while choice != 4 and choice != 5:
+                    print("\n")
+                    in_game_menu()
+                    print("\n")
+                    choice = input("What would you like to do?")
+                    match int(choice):
+                        case 1:
+                            ad.print_character_sheet()
+                        case 2:
+                            ad.check_inventory()
+                        case 3:
+                            print("\n")
+                            ad.check_inventory()
+                            use = input("Which item would you like to use?")
+                            for item in ad.backpack["Consumables"]:
+                                if item.name == use:
+                                    ad.use_item(item)
+                                else:
+                                    print("That item is not in your backpack!")
+                        case 4:
+                            ad.current_room = ad.current_room.next
+                        case 5:
+                            game_over()
+                        case _:
+                            print("That is not an option!")
+            case "boss room":
+                boss = ad.current_room.enemies[0]
+                print("You find yourself in a large room with a large door at the end")
+                print(f"but before you can reach the door a {boss.name} appears!")
+                room_complete = fight(ad.current_room, ad)
+    print("You have reached the end of the dungeon!")
+    print("You win!")
+    
+
+
+def print_enemies_left(room):
+    """
+    prints the enemies left in the room
+
+    Args:
+        room (RoomNode): the room object
+    """
+    if room.num_enemies == 1:
+        print(f"There is {room.num_enemies} {room.enemies[0].name} left!")
+    else:
+        enemies_stated = {}
+        for enemy in room.enemies:
+            enemy_num = room.enemies.count(enemy)
+            if enemy not in enemies_stated:
+                enemies_stated[enemy] = enemy_num
+        for e in enemies_stated.keys():
+            if e == enemies_stated.keys()[0]:
+                print(f"There are {enemies_stated[e]} {e}s left!")
+            elif e == enemies_stated.keys()[-1]:
+                print(f"and {enemies_stated[e]} {e}s left!")
+            else:
+                print(f", {enemies_stated[e]} {e}s left!")
+
+
+def fight(room, player):
+    """ 
+    This function runs the fight between the player and the enemies.
+
+    Args:
+        num_enemies (int): the number of enemies in the room
+        enemy (Enemy): the enemy object
+        player (Adventurer): the player object
+
+    Returns:
+        boolean: True if the player dies, False if the player wins
+    """
+    room_complete = False
+    while not room_complete:
+        match room.val:
+            case "boss room":
+                room_complete = boss_fight_menu(room, player)
+            case "Fight room":
+                room_complete = fight_menu(room, player)
+    return room_complete
                             
                             
 def game_over():
@@ -976,6 +1191,23 @@ def game_over():
     elif play_again == 'n' or play_again == 'N':
         print("Thanks for playing!")
         quit()
+        
+
+def slow_print(text, delay=0.05):
+    """
+    This function prints text slowly.
+
+    Parameters:
+    text (str): The text to print.
+    delay (float): The delay between characters.
+
+    Returns:
+    None
+    """
+    for char in text:
+        print(char, end="", flush=True)
+        time.sleep(delay)
+    print()
                             
 
 def main():
@@ -1156,37 +1388,12 @@ def main():
                     print("\n")
                 case 2:           # checks the inventory
                     print("\n")
-                    inv_choice = 0
-                    # The inventory loop
-                    while inv_choice != "3":
-                        inventory_menu()
-                        inv_choice = input("\nplease make a selection\n")
-                        match int(inv_choice):
-                            case 1:           # lists the inventory
-                                ad.check_inventory()
-                            case 2:           # equips an item
-                                done = False
-                                while not done:
-                                    print("\n")
-                                    equip = input("Which item would you like to equip?\n")
-                                    for item in ad.backpack["Weapons"]:
-                                        if item.name != equip:
-                                            continue
-                                        ad.equip_weapon(item)
-                                        done = True
-                                    for item in ad.backpack["Armor"]:
-
-                                        if item.name != equip:
-                                            continue
-                                        ad.equip_armor(item)
-                                        done = True
-                                    if not done:
-                                        print("That item is not in your backpack!")
+                    inventory_menu(ad)
                 case 3:            # enters the dungeon
                     
                     # Creates the dungeon
-                    new_dungeon = dungeon.create_dungeon(ad.level, loot, rare_loot, enemies, bosses,
-                                                         1)
+                    new_dungeon = dungeon.create_dungeon(ad, loot, rare_loot, enemies, bosses,
+                                                         random.randint(1, 3))
                     # The dungeon loop
                     while not new_dungeon.is_empty():
                         game_over = reveal_room(new_dungeon, ad)
