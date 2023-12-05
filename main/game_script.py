@@ -163,39 +163,45 @@ class Adventurer:
                 # checks if the player has a strength or dexterity based weapon
                 if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
                     or self.equipped["Weapon"].weapon_type == "heavy":
-                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
+                    hit_roll = max(dice_roll.roll(2, "d20")[0])
+                    hit_roll_mod = hit_roll + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"You rolled a {hit_roll}!")
-                    result = dice_roll.attack_roll(hit_roll, self, enemy)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.attack_roll(hit_roll, hit_roll_mod, self, enemy)
                 elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
                         "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
-                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["dex"] + self.equipped["Weapon"].bonus
+                    hit_roll = max(dice_roll.roll(2, "d20")[0])
+                    hit_roll_mod = hit_roll + self.modifiers["dex"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"You rolled a {hit_roll}!")
-                    result = dice_roll.attack_roll(hit_roll, self, enemy)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.attack_roll(hit_roll, hit_roll_mod, self, enemy)
                 else:
-                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
+                    hit_roll = max(dice_roll.roll(2, "d20")[0])
+                    hit_roll_mod = hit_roll + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"You rolled a {hit_roll}!")
-                    result = dice_roll.attack_roll(hit_roll, self, enemy)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.attack_roll(hit_roll, hit_roll_mod, self, enemy)
             elif not self.has_adv:
                 if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
                     or self.equipped["Weapon"].weapon_type == "heavy":
-                    hit_roll = max(dice_roll.roll(1, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
+                    hit_roll = dice_roll.roll(1, "d20")[0]
+                    hit_roll_mod = hit_roll + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"You rolled a {hit_roll}!")
-                    result = dice_roll.attack_roll(hit_roll, self, enemy)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.attack_roll(hit_roll, hit_roll_mod, self, enemy)
                 elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
                         "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
-                    hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["dex"] + self.equipped["Weapon"].bonus
+                    hit_roll = dice_roll.roll(1, "d20")[0]
+                    hit_roll_mod = hit_roll + self.modifiers["dex"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"You rolled a {hit_roll}!")
-                    result = dice_roll.attack_roll(hit_roll, self, enemy)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.attack_roll(hit_roll, hit_roll_mod, self, enemy)
                 else:
-                    hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["str"] + self.equipped["Weapon"].bonus
+                    hit_roll = dice_roll.roll(1, "d20")[0]
+                    hit_roll_mod = hit_roll + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"You rolled a {hit_roll}!")
-                    result = dice_roll.attack_roll(hit_roll, self, enemy)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.attack_roll(hit_roll, hit_roll_mod, self, enemy)
             return result
 
     def set_starting_equip(self, weapons, armor):
@@ -447,40 +453,47 @@ class Enemy:
                 # checks if the enemy has a strength or dexterity based weapon
                 if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
                     or self.equipped["Weapon"].weapon_type == "heavy":
-                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
+                    hit_roll = max(dice_roll.roll(2, "d20")[0])
+                    hit_roll_mod = hit_roll + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"The {self.name} rolled a {hit_roll}!")
-                    result = dice_roll.enemy_attack_roll(hit_roll, self, player)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.enemy_attack_roll(hit_roll, hit_roll_mod, self, player)
                 elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
                         "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
-                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["dex"] + self.equipped["Weapon"].bonus
+                    hit_roll = max(dice_roll.roll(2, "d20")[0])
+                    hit_roll_mod = hit_roll + self.modifiers["dex"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"The {self.name} rolled a {hit_roll}!")
-                    result = dice_roll.enemy_attack_roll(hit_roll, self, player)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.enemy_attack_roll(hit_roll, hit_roll_mod, self, player)
                 else:
-                    hit_roll = max(dice_roll.roll(2, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
+                    hit_roll = max(dice_roll.roll(2, "d20")[0])
+                    hit_roll_mod = hit_roll + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"The {self.name} rolled a {hit_roll}!")
-                    result = dice_roll.enemy_attack_roll(hit_roll, self, player)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.enemy_attack_roll(hit_roll, hit_roll_mod, self, player)
             elif not self.has_adv:
                 if self.equipped["Weapon"].weapon_type == "versatile" or self.equipped["Weapon"].weapon_type == "two-handed" \
                     or self.equipped["Weapon"].weapon_type == "heavy":
-                    hit_roll = max(dice_roll.roll(1, "d20")[0]) + self.modifiers["str"] + self.equipped["Weapon"].bonus
+                    hit_roll = dice_roll.roll(1, "d20")[0]
+                    hit_roll_mod = hit_roll + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"The {self.name} rolled a {hit_roll}!")
-                    result = dice_roll.enemy_attack_roll(hit_roll, self, player)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.enemy_attack_roll(hit_roll, hit_roll_mod, self, player)
                 elif self.equipped["Weapon"].weapon_type == "finesse" or self.equipped["Weapon"].weapon_type ==\
                         "ranged" or self.equipped["Weapon"].weapon_type == "thrown":
-                    hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["dex"] + self.equipped["Weapon"].bonus
+                    hit_roll = dice_roll.roll(1, "d20")[0]
+                    hit_roll_mod = hit_roll + self.modifiers["dex"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"The {self.name} rolled a {hit_roll}!")
-                    result = dice_roll.enemy_attack_roll(hit_roll, self, player)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.enemy_attack_roll(hit_roll, hit_roll_mod, self, player)
                 else:
-                    hit_roll = dice_roll.roll(1, "d20")[1] + self.modifiers["str"] + self.equipped["Weapon"].bonus
+                    hit_roll = dice_roll.roll(1, "d20")[0]
+                    hit_roll_mod = hit_roll + self.modifiers["str"] + self.equipped["Weapon"].bonus
                     print("\n")
-                    print(f"The {self.name} rolled a {hit_roll}!")
-                    result = dice_roll.enemy_attack_roll(hit_roll, self, player)
+                    print(f"You rolled a {hit_roll_mod}!")
+                    result = dice_roll.enemy_attack_roll(hit_roll, hit_roll_mod, self, player)
             return result
+
         
         
     def update_stats(self):
@@ -819,7 +832,7 @@ def boss_fight_menu(room, player):
     print("2. Use item")
     print("3. attack")
     print("4. Run")
-    fight_option = input("What would you like to do?")
+    fight_option = input("What would you like to do? ")
     match int(fight_option):
         case 1:                        # list inventory
             player.check_inventory()
@@ -865,7 +878,7 @@ def fight_menu(room, player):
         print("2. Use item")
         print("3. attack")
         print("4. Run")
-        fight_option = input("What would you like to do?")
+        fight_option = input("What would you like to do? ")
         match int(fight_option):
             case 1:                        # list inventory
                 player.check_inventory()
