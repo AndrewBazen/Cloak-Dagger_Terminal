@@ -3,6 +3,7 @@ import dice_roll
 from pyfiglet import Figlet
 import dungeon
 import shutil
+import time
 
 
 class Adventurer:
@@ -667,9 +668,9 @@ def create_character(ad, classes, races):
     
     # while loop to keep the character                  
     while not keep_character:                                                     
-        print("\nWhat is your name Adventurer?\n")
+        slow_print("\nWhat is your name Adventurer?\n")
         ad.name = input("")                       
-        print(f"\nHello {ad.name}, what race are you?\n")                       
+        slow_print(f"\nHello {ad.name}, what race are you?\n")                       
         print("--- Races ---") 
         for race in races:
             print(race.name)
@@ -684,8 +685,8 @@ def create_character(ad, classes, races):
                 else:
                     continue
             if ad.race == "":
-                print("That race does not exist! please choose another")
-        print("\nWhat class are you?\n")
+                slow_print("That race does not exist! please choose another")
+        slow_print("\nWhat class are you?\n")
         print("--- Classes ---")
         for cl in classes:
             print(cl)
@@ -700,14 +701,14 @@ def create_character(ad, classes, races):
                 else:
                     continue
             if ad.ad_class == "":
-                print("That class does not exist! please choose another")
+                slow_print("That class does not exist! please choose another")
                 
         # Prints the character and asks if the user wants to keep it
-        print("\nHere is your adventurer!\n")
+        slow_print("\nHere is your adventurer!\n")
         print(f"--- {ad.name} ---")
         print(f"Race: {ad.race}")
         print(f"Class: {ad.ad_class}")
-        print("\nwould you like to keep this character and roll stats? (y/n)")
+        slow_print("\nwould you like to keep this character and roll stats? (y/n)")
 
         # While loop to check if the user wants to keep the character
         correct_input = False
@@ -1119,7 +1120,7 @@ def main():
     # Prints the title screen
     custom_banner = Figlet(font='rozzo')
     print(custom_banner.renderText('Cloak\n   &\nDagger'))
-    print("\n Hello and welcome to the world of DnD!")
+    slow_print("\n Hello and welcome to the world of DnD!")
     print("-----------------------------------------")
 
     # The main game loop

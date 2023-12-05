@@ -1,4 +1,27 @@
 import random
+import time
+import sys
+
+
+def slow_print(text, delay=0.1, end='', flush=False):
+    for char in text:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(delay)
+    sys.stdout.write(end)
+    if flush:
+        sys.stdout.flush()
+
+
+def loading_animation(duration=5, delay=0.1):
+    animation_chars = ['|', '/', '-', '\\']
+
+    start_time = time.time()
+    while time.time() - start_time < duration:
+        for char in animation_chars:
+            sys.stdout.write('\r' + char)
+            sys.stdout.flush()
+            time.sleep(delay)
 
 
 def roll(num_dice, dice_type):
@@ -8,7 +31,17 @@ def roll(num_dice, dice_type):
             counter = num_dice
             dice_total = 0
             while counter > 0:
+                # Print loading text
+                slow_print(f"Rolling {dice_type}...")
+                loading_animation()
+                
                 rand = random.randint(1, 20)
+                
+                # Print the result of the roll
+                for i in range(num_dice):
+                    slow_print(f"Roll number {1} is {rand}")
+                    time.sleep(0.5)
+                
                 rolls.append(rand)
                 dice_total += rand
                 counter = counter - 1
@@ -17,7 +50,18 @@ def roll(num_dice, dice_type):
             counter = num_dice
             dice_total = 0
             while counter > 0:
+                # Print loading text
+                slow_print(f"Rolling {dice_type}...")
+                time.sleep(1)
+                loading_animation()
+                
                 rand = random.randint(1, 12)
+                
+                # Print the result of the roll
+                for i in range(num_dice):
+                    slow_print(f"Roll number {i} is {rand}")
+                    time.sleep(0.5)
+                    
                 rolls.append(rand)
                 dice_total += rand
                 counter = counter - 1
