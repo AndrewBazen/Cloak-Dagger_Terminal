@@ -203,7 +203,7 @@ def roll_stats():
         result.remove(min(result))
         for num in result:
             total += num
-        slow_print(f"\nStat {len(stats)} Total: {total}")
+        slow_print(f"\nStat {len(stats)+1} Total: {total}")
         stats.append(total)
     return stats
 
