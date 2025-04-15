@@ -9,7 +9,7 @@ There is no installation needed, however, you will need to create a folder to pl
 ## Usage
 
 ```bash
-pythons3 cloak_and_dagger.py
+python3 cloak_and_dagger.py
 ```
 
 ## Contributing
